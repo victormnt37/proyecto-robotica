@@ -1,4 +1,4 @@
-# initial_pose_pub.py
+# kyron_initial_pose_pub.py
 # se suscribe al topic /initialpose para fijar la posición inicial del robot.
 # será el encargado de publicar la localización inicial del robot en el mapa.
 

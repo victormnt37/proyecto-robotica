@@ -28,7 +28,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'initial_pose_pub = kyron_nav.initial_pose_pub:main'
+            'kyron_initial_pose_pub = kyron_nav.kyron_initial_pose_pub:main'
+            'kyron_nav_wf=kyron_nav.kyron_nav_wf:main'
         ],
     },
 )
