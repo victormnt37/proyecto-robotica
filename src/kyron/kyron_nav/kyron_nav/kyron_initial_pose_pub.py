@@ -19,10 +19,10 @@ class Publisher(Node):
     def callback(self):
         msg = PoseWithCovarianceStamped()
         msg.header.frame_id = 'map'
-        msg.pose.pose.position.x = 0.2
-        msg.pose.pose.position.y = 0.0
-        msg.pose.pose.orientation.w = 1.0
-        self.get_logger().info('Publishing  Initial Position  \n X= 0.2 \n Y=0.0 \n W = 1.0 ')
+        msg.pose.pose.position.x = 0.5846771001815796 
+        msg.pose.pose.position.y = 15.311471939086914
+        msg.pose.pose.orientation.w = 0.0038585662841796875 
+        self.get_logger().info(f'Publishing  Initial Position  \n X= {msg.pose.pose.position.x } \n Y={msg.pose.pose.position.y} \n W = {msg.pose.pose.orientation.w} ')
         self.publisher_.publish(msg)
 
 def main(args=None):

@@ -17,6 +17,9 @@ def generate_launch_description():
     map_file = os.path.join(pkg_kyron_nav, 'config', 'hospital_world.yaml')
 
     return LaunchDescription([
+        
+        #Ejecuta los comandos que necesitamos  sin necesitar que llamarlos desde otra terminal
+         
         # Lanzar Gazebo con el mundo
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
@@ -24,7 +27,22 @@ def generate_launch_description():
             ),
             launch_arguments={'use_sim_time': 'true'}.items()
         ),
+        
+        # Lanzar Nav2 completo
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('nav2_bringup'), 
+                           'launch', 'navigation_launch.py')
+            ),
+            launch_arguments={
+                'use_sim_time': 'true',
+                'params_file': nav2_yaml  # Usa tu archivo de parámetros
+            }.items()
+        ),
 
+        
+        #Los nodos que activamos/ejecutamos
+        
         # Nodo del mapa
         Node(
             package='nav2_map_server',
@@ -39,6 +57,8 @@ def generate_launch_description():
                 'autostart': True
             }]
         ),
+        
+        
 
         # Nodo de localización AMCL
         Node(

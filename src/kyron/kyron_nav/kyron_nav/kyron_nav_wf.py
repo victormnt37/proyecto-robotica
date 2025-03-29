@@ -37,11 +37,51 @@ class WaypointFollower(Node):
     def send_waypoints(self):
         
         """Envía la lista de puntos al servidor"""
+        
         # 1. Definir los waypoints (puntos de ruta)
         waypoints = [
-            self.create_waypoint(1.0, 0.0, 0),   # Punto 1: 1m adelante, sin rotación
-            self.create_waypoint(2.0, 1.0, 45),  # Punto 2: 2m adelante y 1m izquierda, rotado 45°
-            self.create_waypoint(1.0, 1.0, 90)   # Punto 3: 1m adelante y 1m izquierda, rotado 90°
+            # Waypoint 1 (Orientación 0 grados)
+            self.create_waypoint(
+                x=0.5846771001815796,
+                y=15.311471939086914,
+                yaw_degrees=0
+            ),
+            # Waypoint 2 (Orientación 45 grados)
+            self.create_waypoint(
+                x=-5.106757640838623,
+                y=-1.8345870971679688,
+                yaw_degrees=45
+            ),
+            # Waypoint 3 (Orientación 90 grados)
+            self.create_waypoint(
+                x=4.829135417938232,
+                y=1.2413616180419922,
+                yaw_degrees=90
+            ),
+            # Waypoint 4 (Orientación 135 grados)
+            self.create_waypoint(
+                x=4.830772399902344,
+                y=-5.883827209472656,
+                yaw_degrees=135
+            ),
+            # Waypoint 5 (Orientación 180 grados)
+            self.create_waypoint(
+                x=-5.829804420471191,
+                y=-14.206602096557617,
+                yaw_degrees=180
+            ),
+            # Waypoint 6 (Orientación 225 grados)
+            self.create_waypoint(
+                x=3.6522417068481445,
+                y=-21.372636795043945,
+                yaw_degrees=225
+            ),
+            # Waypoint 7 (Orientación 270 grados)
+            self.create_waypoint(
+                x=-5.516279220581055,
+                y=-24.34018898010254,
+                yaw_degrees=270
+            )
         ]
         
         # 2. Esperar conexión con el servidor

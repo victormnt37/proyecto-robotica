@@ -1287,7 +1287,7 @@
       </include>
     </model>
      <include>
-      <pose>-2.0 -0.5 0.0 0.0 0.0 0.0</pose>
+      <pose>0.5846771001815796 15.311471939086914 0.0038585662841796875 0.0 0.0 0.0</pose>
       <uri>model://turtlebot3_burger</uri>
     </include>
     
