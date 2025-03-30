@@ -1,29 +1,30 @@
-#!/usr/bin/env python3
 import rclpy
 from rclpy.action import ActionClient
 from rclpy.node import Node
 from nav2_msgs.action import FollowWaypoints
 from geometry_msgs.msg import PoseStamped
 import math
+from rclpy.task import Future
+
 
 class WaypointFollower(Node):
     def __init__(self):
         super().__init__('kyron_nav_wf')
         
-        # Crea el cliente de la acción FollowWaypoints
+        # Crear cliente de acción
         self.action_client = ActionClient(self, FollowWaypoints, '/follow_waypoints')
         self.get_logger().info("Cliente de waypoints inicializado")
 
     def create_waypoint(self, x, y, yaw_degrees=0):
-        
         """Crea un punto de ruta con posición y orientación"""
         waypoint = PoseStamped()
-        waypoint.header.frame_id = 'map'  # Usamos el sistema de coordenadas del mapa
+        waypoint.header.frame_id = 'map'
+        waypoint.header.stamp = self.get_clock().now().to_msg()  # Timestamp necesario
         
-        # Posición (x, y en metros)
+        # Posición
         waypoint.pose.position.x = x
         waypoint.pose.position.y = y
-        waypoint.pose.position.z = 0.0  # Para movimiento en 2D
+        waypoint.pose.position.z = 0.0
         
         # Orientación (convertimos ángulos grados a cuaternión)
         yaw_rad = math.radians(yaw_degrees)
@@ -35,80 +36,58 @@ class WaypointFollower(Node):
         return waypoint
 
     def send_waypoints(self):
+        """Define y envía los waypoints al servidor de acción"""
         
-        """Envía la lista de puntos al servidor"""
-        
-        # 1. Definir los waypoints (puntos de ruta)
+        # Lista de waypoints
         waypoints = [
-            # Waypoint 1 (Orientación 0 grados)
-            self.create_waypoint(
-                x=0.5846771001815796,
-                y=15.311471939086914,
-                yaw_degrees=0
-            ),
-            # Waypoint 2 (Orientación 45 grados)
-            self.create_waypoint(
-                x=-5.106757640838623,
-                y=-1.8345870971679688,
-                yaw_degrees=45
-            ),
-            # Waypoint 3 (Orientación 90 grados)
-            self.create_waypoint(
-                x=4.829135417938232,
-                y=1.2413616180419922,
-                yaw_degrees=90
-            ),
-            # Waypoint 4 (Orientación 135 grados)
-            self.create_waypoint(
-                x=4.830772399902344,
-                y=-5.883827209472656,
-                yaw_degrees=135
-            ),
-            # Waypoint 5 (Orientación 180 grados)
-            self.create_waypoint(
-                x=-5.829804420471191,
-                y=-14.206602096557617,
-                yaw_degrees=180
-            ),
-            # Waypoint 6 (Orientación 225 grados)
-            self.create_waypoint(
-                x=3.6522417068481445,
-                y=-21.372636795043945,
-                yaw_degrees=225
-            ),
-            # Waypoint 7 (Orientación 270 grados)
-            self.create_waypoint(
-                x=-5.516279220581055,
-                y=-24.34018898010254,
-                yaw_degrees=270
-            )
+            self.create_waypoint(0.5, 1.0, 0),
+            self.create_waypoint(1.5, 2.0, 45),
+            self.create_waypoint(2.5, 3.0, 90),
+            self.create_waypoint(3.5, 4.0, 135),
+            self.create_waypoint(4.5, 5.0, 180)
         ]
         
-        # 2. Esperar conexión con el servidor
-        self.get_logger().info("Esperando servidor...")
+        # Esperar conexión con el servidor
+        self.get_logger().info("Esperando conexión con el servidor...")
         self.action_client.wait_for_server()
         
-        # 3. Crear y enviar el goal
+        # Crear mensaje de acción
         goal_msg = FollowWaypoints.Goal()
         goal_msg.poses = waypoints
         
-        self.get_logger().info("Enviando waypoints...")
-        self.action_client.send_goal_async(goal_msg)
-        self.get_logger().info("Waypoints enviados correctamente!")
+        # Enviar acción
+        self.get_logger().info("Enviando waypoints al robot...")
+        send_goal_future = self.action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
+        send_goal_future.add_done_callback(self.goal_response_callback)
+
+    def goal_response_callback(self, future):
+        """Maneja la respuesta del servidor cuando se envía un goal"""
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().error("Goal rechazado por el servidor")
+            return
+        
+        self.get_logger().info("Goal aceptado, esperando resultado...")
+        get_result_future = goal_handle.get_result_async()
+        get_result_future.add_done_callback(self.result_callback)
+
+    def feedback_callback(self, feedback_msg):
+        """Recibe feedback durante la ejecución de la acción"""
+        self.get_logger().info(f"Waypoint alcanzado: {feedback_msg.feedback.current_waypoint}")
+
+    def result_callback(self, future: Future):
+        """Procesa el resultado final de la acción"""
+        result = future.result().result
+        self.get_logger().info("Waypoints completados exitosamente!")
+        rclpy.shutdown()  # Finaliza el nodo al completar la acción
+
 
 def main(args=None):
     rclpy.init(args=args)
-    
-    # Crear y ejecutar el cliente
     follower = WaypointFollower()
     follower.send_waypoints()
-    
-    # Mantener el nodo activo
     rclpy.spin(follower)
-    
-    # Limpieza
-    follower.destroy_node()
-    rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
