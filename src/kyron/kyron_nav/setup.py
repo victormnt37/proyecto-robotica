@@ -29,7 +29,8 @@ setup(
     entry_points={
         'console_scripts': [
             'kyron_initial_pose_pub = kyron_nav.kyron_initial_pose_pub:main',
-            'kyron_nav_wf=kyron_nav.kyron_nav_wf:main'
+            'kyron_nav_wf=kyron_nav.kyron_nav_wf:main',
+            'kyron_goal_pub = kyron_nav.kyron_goal_pub:main',
         ],
     },
 )
