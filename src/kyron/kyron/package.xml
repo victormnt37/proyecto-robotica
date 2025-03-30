@@ -11,6 +11,8 @@
 
   <exec_depend>kyron_mundo</exec_depend> 
   <exec_depend> kyron_map_server</exec_depend>
+  <exec_depend>kyron_nav</exec_depend>
+  <exec_depend>ubicacion_robot_en_vivo</exec_depend>
 
 
   <test_depend>ament_lint_auto</test_depend>
