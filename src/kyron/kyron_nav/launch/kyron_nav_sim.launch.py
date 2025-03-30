@@ -1,3 +1,6 @@
+#Launch que lanza todo lo necesario para simular.
+
+
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -69,7 +72,7 @@ def generate_launch_description():
             parameters=[nav2_yaml, {'use_sim_time': True}]
         ),
 
-        # 🚀 **AGREGAMOS LOS NODOS FALTANTES DE NAV2** 🚀
+       
 
         # Servidor de planificación global/local
         Node(

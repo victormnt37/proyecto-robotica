@@ -1,93 +1,124 @@
-import rclpy
-from rclpy.action import ActionClient
-from rclpy.node import Node
-from nav2_msgs.action import FollowWaypoints
-from geometry_msgs.msg import PoseStamped
-import math
-from rclpy.task import Future
+#Sigue una ruta de waypoints 
+#Nota: no va con los waypoints sacados usand publish point pero si losque estan puestos.
 
+import rclpy
+from rclpy.node import Node
+from rclpy.action import ActionClient
+from geometry_msgs.msg import PoseStamped
+from nav2_msgs.action import FollowWaypoints
 
 class WaypointFollower(Node):
     def __init__(self):
-        super().__init__('kyron_nav_wf')
+        super().__init__('kyron_nav_wf')#nombfd cdl nodo
         
-        # Crear cliente de acción
-        self.action_client = ActionClient(self, FollowWaypoints, '/follow_waypoints')
-        self.get_logger().info("Cliente de waypoints inicializado")
+        #cliente de acción para comunicarse con el servidor de waypoints de Nav2
+        
+        self.client = ActionClient(self, FollowWaypoints, 'follow_waypoints')
+        # self.declare_parameter('waypoints', [])
+        
+        self.send_waypoints()
 
-    def create_waypoint(self, x, y, yaw_degrees=0):
-        """Crea un punto de ruta con posición y orientación"""
-        waypoint = PoseStamped()
-        waypoint.header.frame_id = 'map'
-        waypoint.header.stamp = self.get_clock().now().to_msg()  # Timestamp necesario
-        
-        # Posición
-        waypoint.pose.position.x = x
-        waypoint.pose.position.y = y
-        waypoint.pose.position.z = 0.0
-        
-        # Orientación (convertimos ángulos grados a cuaternión)
-        yaw_rad = math.radians(yaw_degrees)
-        qz = math.sin(yaw_rad / 2)
-        qw = math.cos(yaw_rad / 2)
-        waypoint.pose.orientation.z = qz
-        waypoint.pose.orientation.w = qw
-        
-        return waypoint
 
-    def send_waypoints(self):
-        """Define y envía los waypoints al servidor de acción"""
+        """
+        Funcion que define los waypoints para que puedan ser utilizados
+        """    
         
-        # Lista de waypoints
+    def define_waypoints(self):
+        
         waypoints = [
-            self.create_waypoint(0.5, 1.0, 0),
-            self.create_waypoint(1.5, 2.0, 45),
-            self.create_waypoint(2.5, 3.0, 90),
-            self.create_waypoint(3.5, 4.0, 135),
-            self.create_waypoint(4.5, 5.0, 180)
+            (4.829135417938232, 1.2413616180419922),     # Waypoint 1
+            (4.830772399902344, -5.883827209472656),    # Waypoint 2
+            (3.6522417068481445, -21.372636795043945),  # Waypoint 3
+            (-5.516279220581055, -24.34018898010254),   # Waypoint 4
+            (-5.829804420471191, -14.206602096557617),  # Waypoint 5
+            (-5.106757640838623, -1.8345870971679688)    # Waypoint 6
         ]
         
-        # Esperar conexión con el servidor
-        self.get_logger().info("Esperando conexión con el servidor...")
-        self.action_client.wait_for_server()
         
-        # Crear mensaje de acción
-        goal_msg = FollowWaypoints.Goal()
-        goal_msg.poses = waypoints
+        # Lista para almacenar los mensajes de poses objetivo
+        goal_poses = []
         
-        # Enviar acción
-        self.get_logger().info("Enviando waypoints al robot...")
-        send_goal_future = self.action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
-        send_goal_future.add_done_callback(self.goal_response_callback)
+        for x, y in waypoints:
+            goal_pose = PoseStamped() #cada coordenada en un mensaje PoseStamped
+            goal_pose.header.frame_id = 'map'
+            goal_pose.pose.position.x = x
+            goal_pose.pose.position.y = y
+            goal_pose.pose.orientation.w = 1.0  # Orientación neutral
+            goal_poses.append(goal_pose)
+        
+        return goal_poses
+    
+    
+
+    def send_waypoints(self):
+        """
+        Envía la lista de waypoints al servidor de navegación para su ejecución.
+        Configura los callbacks para manejar la respuesta, feedback y resultados.
+        """
+        
+        self.client.wait_for_server()#esperamos al servidor
+        
+        goal_msg = FollowWaypoints.Goal()#creamos el goal
+        goal_msg.poses = self.define_waypoints()#le anadimos los waypointd
+        
+        
+        #enviamosel goal
+        self.send_goal_future = self.client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
+        
+        self.send_goal_future.add_done_callback(self.goal_response_callback)
+        
+        
+        
 
     def goal_response_callback(self, future):
-        """Maneja la respuesta del servidor cuando se envía un goal"""
-        goal_handle = future.result()
-        if not goal_handle.accepted:
-            self.get_logger().error("Goal rechazado por el servidor")
-            return
+        """
+        Callback que maneja la respuesta del servidor al recibir el goal.
         
-        self.get_logger().info("Goal aceptado, esperando resultado...")
-        get_result_future = goal_handle.get_result_async()
-        get_result_future.add_done_callback(self.result_callback)
+        Args:
+            future: Objeto futuro que contiene el resultado de la petición
+        """
+        
+        goal_handle = future.result()
+        
+        if not goal_handle.accepted:
+            self.get_logger().error('Gola rechazado!')
+            return
+        self.get_logger().info('Goal acceptado!')
+        self.result_future = goal_handle.get_result_async()
+        self.result_future.add_done_callback(self.result_callback)
+        
+        
 
     def feedback_callback(self, feedback_msg):
-        """Recibe feedback durante la ejecución de la acción"""
-        self.get_logger().info(f"Waypoint alcanzado: {feedback_msg.feedback.current_waypoint}")
-
-    def result_callback(self, future: Future):
-        """Procesa el resultado final de la acción"""
+        """
+        Callback que recibe feedback periódico durante la ejecución.
+        
+        Args:
+            feedback_msg: Mensaje de feedback con información del progreso
+        """
+        
+        current_waypoint = feedback_msg.feedback.current_waypoint
+        self.get_logger().info(f'Ejecutando waypoint: {current_waypoint + 1}')
+    
+    
+    def result_callback(self, future):
+        """
+        Callback que maneja el resultado final de la navegación.
+        
+        Args:
+            future: Objeto futuro que contiene el resultado de la acción
+        """
+        
         result = future.result().result
-        self.get_logger().info("Waypoints completados exitosamente!")
-        rclpy.shutdown()  # Finaliza el nodo al completar la acción
+        self.get_logger().info('Navegacion completada')
 
 
-def main(args=None):
-    rclpy.init(args=args)
-    follower = WaypointFollower()
-    follower.send_waypoints()
-    rclpy.spin(follower)
-
+def main():
+    rclpy.init()
+    node = WaypointFollower()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
