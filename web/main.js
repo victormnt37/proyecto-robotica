@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', event => {
 	    service_response: ''
     }
 
+    document.getElementById('rosbridge_server').value = data.rosbridge_address;
+
     function connect(){
 	    console.log("Clic en connect")
 
@@ -54,6 +56,8 @@ document.addEventListener('DOMContentLoaded', event => {
                 document.getElementById("pos_x").innerHTML = data.position.x.toFixed(2)
                 document.getElementById("pos_y").innerHTML = data.position.y.toFixed(2)
         })
+
+        updateCameraFeed()
     }
 
     function disconnect(){
@@ -112,5 +116,27 @@ document.addEventListener('DOMContentLoaded', event => {
             angular: {x: 0, y: 0, z: 0.2, },
         })
         topic.publish(message)
+    }
+
+    // Versión usando librería MJPEGCANVAS (requiere cargarla)
+    function setCamera(){
+        console.log("setting the camera")
+    var viewer = new MJPEGCANVAS.Viewer({
+        divID : 'mjpeg',
+        host : 'localhost',
+        width : 640,
+        height : 480,
+        topic : '/camera/image_raw',
+        interval : 200
+        })
+    }
+
+    // otro ejemplo de función (simple para prueba inicial)
+    function updateCameraFeed() {
+        console.log("setting the camera")
+    const img = document.getElementById("cameraFeed");
+    const timestamp = new Date().getTime(); // Evita caché agregando un timestamp
+    img.src = `http://0.0.0.0:8080/stream?topic=/camera/image_raw`;
+    //img.src = `http://localhost:8080/stream?topic=/turtlebot3/camera/image_raw&console.log("Cactualizando: http://0.0.0.0:8080/stream?topic=/camera/image_raw)"`
     }
 });

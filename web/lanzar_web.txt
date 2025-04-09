@@ -1,11 +1,16 @@
-#terminal 1: rosbridge_server
-ros2 launch rosbridge_server rosbridge_websocket_launch.xml
-
-#terminal 2: gazebo
+#terminal 1: gazebo
+cd ~/proyecto-robotica/
+export TURTLEBOT3_MODEL=burger_pi
 source install/setup.bash
 ros2 launch kyron_mundo turtlebot3_hospital.launch.py
 
+#terminal 2: rosbridge_server
+ros2 launch rosbridge_server rosbridge_websocket_launch.xml
+
 #terminal 3: servidor web
+ros2 run web_video_server web_video_server
+
+#terminal 4:
 python3 -m http.server 8000
 
 #navegador
