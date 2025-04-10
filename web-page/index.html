@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kyron Robotics - Inicio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+    <!-- Header No Autenticado -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">
+                <img src="assets/logo.jpeg" alt="Kyron Robotics" class="logo-img">
+                <span class="logo-text">Kyron</span>
+            </a>
+            <nav class="auth-buttons">
+                <button class="btn btn-outline" onclick="window.location.href='pages/login.html'">Iniciar Sesión</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Sección Hero -->
+    <main>
+        <!-- Sección Hero -->
+        <section class="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">Tecnología Robótica para la Salud Humana</h1>
+                <button class="btn btn-primary" onclick="window.location.href='pages/request-robot.html'">Solicitar Robot</button>
+            </div>
+            <a href="#about" class="scroll-indicator" aria-label="Desplazar hacia abajo"></a>
+        </section>
+        
+        <!-- Añadir id a la sección destino -->
+        <section class="about-section container" id="about">
+
+        <!-- Sección de Contenido -->
+        <section class="about-section container">
+            <div class="about-content">
+                <h2>Nuestra Innovación</h2>
+                <div class="about-grid">
+                    <article class="about-card">
+                        <h3>Orígenes del Proyecto</h3>
+                        <p>Desarrollado en colaboración con líderes médicos para cubrir necesidades críticas en entornos hospitalarios.</p>
+                    </article>
+                    <article class="about-card">
+                        <h3>Funcionalidades Clave</h3>
+                        <ul class="feature-list">
+                            <li>Navegación autónoma en entornos complejos</li>
+                            <li>Interacción paciente-robot segura</li>
+                            <li>Monitorización en tiempo real</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <p class="copyright">&copy; 2025 Kyron Registration - Sistema de Gestión Hospitalaria</p>
+            <div class="footer-info">
+                <span>Contacto: soporte@kyronhealth.com</span>
+                <nav class="social-links">
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">Twitter</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
