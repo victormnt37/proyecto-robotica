@@ -1,6 +1,6 @@
 :root {
     --primary-green: #2E8B57;
-    --secondary-blue: #1E3A8A ;
+    --secondary-blue: #1E3A8A;
     --accent-teal: #40916C;
     --light-gray: #F8F9FA;
     --dark-gray: #212529;
@@ -60,34 +60,43 @@ body {
     font-weight: 700;
 }
 
-/* Botones */
-.btn {
-    padding: 1.2rem 3rem;
-    border-radius: 8px;
-    font-weight: 1000;
+/* Botones Específicos */
+.btn-hero {
+    margin-top: 8rem;
+    padding: 1.5rem 3.5rem;
+    border-radius: 12px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    background: var(--accent-teal);
+    color: var(--white);
+    border: 3px solid var(--accent-teal);
     transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(64, 145, 108, 0.3);
     cursor: pointer;
 }
 
-.btn-primary {
-    background: var(--accent-teal);
-    color: var(--white);
-    border: 2px solid var(--accent-teal);
-}
-
-.btn-primary:hover {
+.btn-hero:hover {
     background: var(--primary-green);
     border-color: var(--primary-green);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 139, 87, 0.4);
 }
 
-.btn-outline {
+.btn-header {
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
     background: transparent;
     border: 2px solid var(--white);
     color: var(--white);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
 }
 
-.btn-outline:hover {
-    background: rgba(255,255,255,0.1);
+.btn-header:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.7);
 }
 
 /* Footer */
@@ -95,7 +104,7 @@ body {
     background: var(--primary-green);
     color: var(--white);
     padding: 2rem 0;
-    margin-top: 4rem;
+    margin-top: 0rem;
 }
 
 .footer-content {
