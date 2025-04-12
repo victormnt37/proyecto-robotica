@@ -7,6 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/panel_de_control.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+    <script src="../js/main.js" defer></script>
 </head>
 <body>
     <!-- Header Autenticado -->
@@ -44,6 +46,19 @@
                     <h2>Estado del Robot</h2>
                     <div class="status-grid">
                         <div class="status-item">
+                            <div class="status-indicator"></div>
+                            <div>
+                                <h3>Introduce la dirección del rosbridge_server: </h3>
+                                <input type="text" name="rosbridge_server" id="rosbridge_server">
+                                <br>
+                                <button class="mt-2 btn btn-success" id="btn_con">Conectar</button>
+                                <button class="mt-2 btn btn-danger" id="btn_dis">Desconectar</button>
+                                <br>
+                                <br>
+                                <p>Estado de la conexion: <span id="estado">Desconectado</span></p>
+                            </div>
+                        </div>
+                        <div class="status-item">
                             <div class="status-indicator active"></div>
                             <div>
                                 <h3>Conexión</h3>
@@ -60,6 +75,19 @@
                         <div class="status-item">
                             <div class="status-indicator"></div>
                             <div>
+                                <h3>Posicion actual</h3>
+                                <p>
+                                    <span>X: <span id="pos_x">...</span>
+                                        </span>
+                                    <br>
+                                        <span>Y: <span id="pos_y">...</span>
+                                        </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-indicator"></div>
+                            <div>
                                 <h3>Tarea Actual</h3>
                                 <p>En espera</p>
                             </div>
@@ -67,7 +95,6 @@
                     </div>
                 </section>
 
-                <!-- Sección Conversación -->
                 <!-- Sección Conversación -->
                 <section class="card conversation">
                     <h2>Conversación con Paciente</h2>
@@ -117,30 +144,51 @@
                     </div>
                 </section>
 
+                <!-- Sección de Botones de dirección a Salas -->
+                 <section class="card direccion-salas">
+                    <h2>Dirección a salas</h2>
+                    <p>Selecciona una sala a la que dirigir al robot.</p>
+                    <div class="salas-container">
+                        <button class="boton-sala" id="sala-entrada">Entrada</button>
+                        <button class="boton-sala" id="sala-recepcion">Recepción</button>
+                        <button class="boton-sala" id="sala-5">Sala 5</button>
+                        <button class="boton-sala" id="sala-6">Sala 6</button>
+                        <button class="boton-sala" id="sala-7">Sala 7</button>
+                        <button class="boton-sala" id="sala-8">Sala 8</button>
+                        <button class="boton-sala" id="sala-11">Sala 11</button>
+                        <button class="boton-sala" id="sala-12">Sala 12</button>
+                        <button class="boton-sala" id="sala-16">Sala 16</button>
+                        <button class="boton-sala" id="sala-1">Sala 1</button>
+                    </div>
+                 </section>
+
                 <!-- Sección Cámara y Controles -->
                 <section class="card camera-section">
                     <h2>Control del Robot</h2>
                     <div class="camera-preview">
                         <!-- Espacio reservado para cámara -->
-                        <div class="camera-placeholder">
+                        <!-- <div class="camera-placeholder">
                             <svg viewBox="0 0 24 24" fill="#94a3b8"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
                             <p>Vista en vivo de la cámara</p>
+                        </div> -->
+                        <div id="divCamera">
+                            <img id="cameraFeed" src="http://localhost:8080/stream?topic=/turtlebot3/camera/image_raw">
                         </div>
                     </div>
                     <div class="robot-controls">
-                        <button class="control-btn btn-primary">
+                        <button class="control-btn btn-primary" id="btn_move">
                             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             Mover
                         </button>
-                        <button class="control-btn btn-secondary">
+                        <button class="control-btn btn-secondary" id="btn_stop">
                             <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                             Parar
                         </button>
-                        <button class="control-btn btn-primary">
+                        <button class="control-btn btn-primary" id="btn_right">
                             <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5v10z"/></svg>
                             Derecha
                         </button>
-                        <button class="control-btn btn-primary">
+                        <button class="control-btn btn-primary" id="btn_left">
                             <svg viewBox="0 0 24 24"><path d="M14 7l-5 5 5 5V7z"/></svg>
                             Izquierda
                         </button>

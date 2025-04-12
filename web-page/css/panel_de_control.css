@@ -22,6 +22,23 @@
 }
 
 /* Estado del Robot - Flexible */
+#btn_con, #btn_dis {
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid white;
+    color: white;
+}
+
+#btn_con {
+    background-color: #40916C;
+}
+
+#btn_dis {
+    background-color: red;
+}
+
 .robot-status {
     flex: 0 0 auto; /* No crece ni se encoge */
 }
@@ -108,7 +125,7 @@
     text-align: right;
 }
 
-/* Mapa y Cámara - Proporcionales */
+/* Mapa, Botones y Cámara - Proporcionales */
 .map-container {
     aspect-ratio: 16/9; /* Relación de aspecto */
     background: #e2e8f0;
@@ -117,6 +134,29 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.direccion-salas {
+    background: #e2e8f0;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.salas-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.boton-sala {
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid white;
+    background-color: #40916C;
+    color: white;
+    font-size: 1rem;
 }
 
 .camera-preview {

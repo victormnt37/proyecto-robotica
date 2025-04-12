@@ -1,0 +1,53 @@
+#terminal 1: gazebo
+cd ~/proyecto-robotica/
+export TURTLEBOT3_MODEL=burger_pi
+source install/setup.bash
+ros2 launch kyron_mundo turtlebot3_hospital.launch.py
+
+#terminal 2: rosbridge_server
+ros2 launch rosbridge_server rosbridge_websocket_launch.xml
+
+#terminal 3: servidor web
+ros2 run web_video_server web_video_server
+
+#terminal 4:
+python3 -m http.server 8000
+
+#navegador
+http://localhost:8000/web-page/
+
+#poner en navegador el rosbridge_server:
+ws://127.0.0.1:9090/
+
+
+
+
+# PARA LANZAR NAVEGACION (ADICIONAL)
+
+### Terminal 1
+
+cd ~/proyecto-robotica/
+export TURTLEBOT3_MODEL=burger_pi
+source install/setup.bash
+ros2 launch kyron_nav kyron_nav_sim.launch.py 
+
+### Terminal 2
+
+cd ~/proyecto-robotica/
+ros2 service call /map_server/load_map nav2_msgs/srv/LoadMap "{map_url: /home/victor/proyecto-robotica/src/kyron/kyron_nav/config/hospital_world.yaml}"
+
+source install/setup.bash
+ros2 run kyron_nav kyron_initial_pose_pub
+
+### Terminal 3
+
+cd ~/proyecto-robotica/
+ros2 launch rosbridge_server rosbridge_websocket_launch.xml
+
+### Terminal 4
+
+cd ~/proyecto-robotica/
+ros2 run web_video_server web_video_server
+
+### Terminal 5
+python3 -m http.server 8000

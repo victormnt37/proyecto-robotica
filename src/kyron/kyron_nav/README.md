@@ -20,11 +20,8 @@ ros2 launch kyron_nav kyron_nav_sim.launch.py
 ros2 service call /map_server/load_map nav2_msgs/srv/LoadMap "{map_url: /home/admin/proyecto-robotica/src/kyron/kyron_nav/config/hospital_world.yaml}"
 
 **Publica la posicion inicial del robot **
+source install/setup.bash
 ros2 run kyron_nav kyron_initial_pose_pub
-
-ros2 service call /map_server/load_map nav2_msgs/srv/LoadMap "{
-  map_url: '$(ros2 pkg prefix kyron_nav)/share/kyron_nav/config/hospital_world.yaml'
-}"
 
 ** Instruccion de mover a destino con coordenadas **
 
