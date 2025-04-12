@@ -8,10 +8,16 @@ class WaypointFollower(Node):
     def __init__(self):
         super().__init__('kyron_nav_wf')
         self._action_client = ActionClient(self, FollowWaypoints, 'follow_waypoints')
-        self.get_logger().info('Waypoint Follower Client initialized')
+        self.get_logger().info('Waypoint client iniciado')
 
     def define_waypoints(self):
-        """Lista de puntos que ha de recorrer el robot."""
+        """ Define una lista de puntos y los prepara para que se pueda utilizar como waypoints
+        quel robot pueda seguir
+
+        Devuelve
+        List[pose]
+        
+        ."""
         puntos = [
             (2.1817116737365723, 13.7138671875),
             (3.029665470123291, 11.146732330322266),
@@ -39,7 +45,7 @@ class WaypointFollower(Node):
 
 
     def send_waypoints(self, waypoints):
-        """Enviar la lista de puntos al action server."""
+        """Envia la lista de puntos al action server."""
         if not self._action_client.wait_for_server(timeout_sec=10.0):
             self.get_logger().error('Action server no disponible')
             return
@@ -54,28 +60,28 @@ class WaypointFollower(Node):
 
     def goal_response_callback(self, future):
 
-        """Manejar la respuesta del servidor."""
+        """Maneja la respuesta del servidor."""
         goal_handle = future.result()
         if not goal_handle.accepted:
-            self.get_logger().info('Goal rejected by server')
+            self.get_logger().info('Goal rechazado')
             return
 
-        self.get_logger().info('Goal accepted by server, waiting for result...')
+        self.get_logger().info('Goal acceptado, esperando resultado...')
         self._get_result_future = goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
 
     def feedback_callback(self, feedback_msg):
 
-        """Handle feedback from the action server."""
+        """Manjea el feedback del servidor de accion."""
         current_waypoint = feedback_msg.feedback.current_waypoint
-        self.get_logger().info(f'Currently at waypoint: {current_waypoint}')
+        self.get_logger().info(f'waypoint_actual: {current_waypoint}')
 
     def get_result_callback(self, future):
 
-        """Handle the result from the action server."""
+        """Maneja los resultados."""
         result = future.result().result
-        self.get_logger().info('Result received:')
-        self.get_logger().info(f'Missed waypoints: {len(result.missed_waypoints)}')
+        self.get_logger().info('Resultados recibidos:')
+        self.get_logger().info(f'Waypoints fallidos: {len(result.missed_waypoints)}')
         self.get_logger().info(f'Error code: {result.error_code}')
         rclpy.shutdown()
 

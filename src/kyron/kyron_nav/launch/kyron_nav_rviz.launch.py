@@ -11,14 +11,26 @@ from launch_ros.actions import Node
 def generate_launch_description():
 
     pkg_name='kyron_nav'
+    pkg_kyron_mundo = get_package_share_directory('kyron_mundo')
+
     nav2_yaml = os.path.join(get_package_share_directory(pkg_name), 'config', 'kyron_nav_params.yaml')
     map_file = os.path.join(get_package_share_directory(pkg_name), 'config', 'hospital_world.yaml')
     rviz_config_dir = os.path.join(get_package_share_directory(pkg_name), 'config', 'kyron_rviz_config.rviz')
 
     urdf = os.path.join(get_package_share_directory('turtlebot3_description'), 'urdf', 'turtlebot3_burger.urdf')
-   # world = os.path.join(get_package_share_directory('turtlebot3_gazebo'), 'worlds', 'turtlebot3_worlds/burger.model')
+
 
     return LaunchDescription([
+
+         # Lanzar Gazebo con el mundo
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(pkg_kyron_mundo, 'launch', 'turtlebot3_hospital.launch.py')
+            ),
+            launch_arguments={'use_sim_time': 'true'}.items()
+        ),
+
+        
         Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
@@ -27,7 +39,7 @@ def generate_launch_description():
             parameters=[{'use_sim_time': True}],
             arguments=[urdf]
         ),
-        
+
         Node(
             package = 'nav2_map_server',
             executable = 'map_server',
@@ -81,6 +93,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': True},
                         {'autostart': True},
+                        {'bond_timeout':4.0},#The bond_timeout gives the nodes a few seconds to initialize before the lifecycle manager attempts to activate them.
                         {'node_names':['map_server', 'amcl', 'planner_server', 'controller_server', 'recoveries_server', 'bt_navigator','waypoint_follower']}]
         ),
 
@@ -97,7 +110,7 @@ def generate_launch_description():
          Node(
             package='kyron_nav',
             executable='kyron_initial_pose_pub',
-            name='kyron_initial_pose_pubs',
+            name='kyron_initial_pose_pub',
             output='screen',
             parameters=[{'use_sim_time': True}]
         ),
