@@ -9,7 +9,27 @@ let ctx = canvas.getContext("2d");
 let image = new Image();
 let robotPosition = {x: 0, y: 0};
 
+const ros = new ROSLIB.Ros({
+    url: 'ws://localhost:9090'  // Asegúrate de que rosbridge esté corriendo aquí
+  });
+  
+  ros.on('connection', () => {
+    console.log('✅ Conectado a ROS.');
+  });
+  
+  ros.on('error', (error) => {
+    console.error('❌ Error en la conexión a ROS:', error);
+  });
+  
+  ros.on('close', () => {
+    console.log('🔌 Conexión con ROS cerrada.');
+  });
 
+const odomTopic = new ROSLIB.Topic({
+    ros: ros,
+    name: '/odom',
+    messageType: 'nav_msgs/Odometry'
+});
 document.addEventListener("DOMContentLoaded", () => {
     // Leer YAML del mapa
     fetch(mapYamlUrl)
@@ -54,9 +74,9 @@ function draw() {
 }
 
 // Ajustar esta parte en la conexión ros y suscripción al Topic /odom
-//odomTopic.subscribe((message) => {
-//   robotPosition.x = message.pose.pose.position.x;
-//   robotPosition.y = message.pose.pose.position.y;
- //   draw();  
-//})// redibuja mapa + posición del robot
+odomTopic.subscribe((message) => {
+    robotPosition.x = message.pose.pose.position.x;
+    robotPosition.y = message.pose.pose.position.y;
+    draw();  
+})// redibuja mapa + posición del robot
 
