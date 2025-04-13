@@ -1,10 +1,9 @@
 #Launch que lanza todo lo necesario para simular.
 
-
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
@@ -21,7 +20,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         
-        #Ejecuta los comandos que necesitamos  sin necesitar que llamarlos desde otra terminal
+        #Ejecuta los comandos que necesitamos sin necesitar que llamarlos desde otra terminal
          
         # Lanzar Gazebo con el mundo
         IncludeLaunchDescription(
@@ -43,9 +42,6 @@ def generate_launch_description():
             }.items()
         ),
 
-        
-        #Los nodos que activamos/ejecutamos
-        
         # Nodo del mapa
         Node(
             package='nav2_map_server',
@@ -61,7 +57,6 @@ def generate_launch_description():
             }]
         ),
         
-        
 
         # Nodo de localización AMCL
         Node(
@@ -71,8 +66,6 @@ def generate_launch_description():
             output='screen',
             parameters=[nav2_yaml, {'use_sim_time': True}]
         ),
-
-       
 
         # Servidor de planificación global/local
         Node(
@@ -99,13 +92,6 @@ def generate_launch_description():
             parameters=[nav2_yaml, {'use_sim_time': True}]
         ),
 
-        Node(
-            package='nav2_waypoint_follower',
-            executable='waypoint_follower',
-            name='waypoint_follower',
-            output='screen',
-            parameters=[nav2_yaml, {'use_sim_time': True}]
-        ),
 
         # Lifecycle manager que controla todos los nodos de Nav2
         Node(

@@ -1,0 +1,231 @@
+/* Estructura Principal */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 1fr 3fr; /* 25% / 75% */
+    gap: 2rem;
+    margin: 2rem 0;
+    min-height: calc(100vh - 150px);
+    align-items: start;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100%;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Estado del Robot - Flexible */
+#btn_con, #btn_dis {
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid white;
+    color: white;
+}
+
+#btn_con {
+    background-color: #40916C;
+}
+
+#btn_dis {
+    background-color: red;
+}
+
+.robot-status {
+    flex: 0 0 auto; /* No crece ni se encoge */
+}
+
+.robot-status .status-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem;
+    background: var(--light-gray);
+    border-radius: 8px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #e2e8f0;
+}
+
+.status-indicator.active {
+    background: var(--accent-teal);
+    animation: pulse 1.5s infinite;
+}
+
+/* Conversación - Flexible con scroll */
+.conversation {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Permite que el scroll funcione correctamente */
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ocupa todo el espacio disponible */
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: var(--light-gray);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* Mensajes mejorados */
+.message {
+    max-width: 80%;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    align-self: flex-start;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.message.received {
+    background: var(--white);
+    border: 1px solid #e2e8f0;
+}
+
+.message.sent {
+    background: var(--accent-teal);
+    color: var(--white);
+    align-self: flex-end;
+}
+
+.message span {
+    display: block;
+    font-size: 0.7rem;
+    opacity: 0.7;
+    margin-top: 0.3rem;
+    text-align: right;
+}
+
+/* Mapa, Botones y Cámara - Proporcionales */
+.map-container {
+    aspect-ratio: 16/9; /* Relación de aspecto */
+    background: #e2e8f0;
+    border-radius: 8px;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.direccion-salas {
+    background: #e2e8f0;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.salas-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.boton-sala {
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid white;
+    background-color: #40916C;
+    color: white;
+    font-size: 1rem;
+}
+
+.camera-preview {
+    aspect-ratio: 4/3; /* Relación típica de cámara */
+    background: #e2e8f0;
+    border-radius: 8px;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Controles del Robot - Flexibles */
+.robot-controls {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.control-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 0.5rem;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    min-height: 60px;
+}
+
+.control-btn svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* Scrollbar personalizada */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: var(--accent-teal);
+    border-radius: 3px;
+}
+
+/* Animaciones */
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 0.4; }
+    100% { opacity: 0.8; }
+}
+
+@media (max-width: 1024px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .robot-controls {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .map-container, .camera-preview {
+        aspect-ratio: 16/9;
+    }
+}
