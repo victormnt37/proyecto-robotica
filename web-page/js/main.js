@@ -86,11 +86,6 @@ document.addEventListener('DOMContentLoaded', event => {
         updateCameraFeed()
     }
 
-    function disconnect(){
-	      data.ros.close()
-	      data.connected = false
-        console.log('Clic en botón de desconexión')
-    }
 
     function move() {
         let topic = new ROSLIB.Topic({
@@ -118,6 +113,12 @@ document.addEventListener('DOMContentLoaded', event => {
         topic.publish(message)
     }
 
+    function disconnect(){
+        stop()
+      data.ros.close()
+      data.connected = false
+    console.log('Clic en botón de desconexión')
+}
     function derecha() {
         let topic = new ROSLIB.Topic({
             ros: data.ros,

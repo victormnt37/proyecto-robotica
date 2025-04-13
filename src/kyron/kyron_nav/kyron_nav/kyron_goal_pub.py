@@ -8,13 +8,30 @@ from geometry_msgs.msg import PoseStamped
 import argparse
 
 class GoalPublisher(Node):
-
+    """Nodo ROS 2 que publica una meta de navegación en el tópico /goal_pose."""
     def __init__(self, x, y, w):
+        """Inicializa el nodo y publica la meta de navegación.
+
+        Args:
+            x (float): Coordenada X de la meta en el marco 'map'.
+            y (float): Coordenada Y de la meta en el marco 'map'.
+            w (float): Componente w del cuaternión de orientación (0 a 1).
+        """
         super().__init__('goal_pub_node')
         self.publisher_ = self.create_publisher(PoseStamped, '/goal_pose', 10)
         self.publish_goal(x, y, w)
 
     def publish_goal(self, x, y, w):
+        """Publica un mensaje PoseStamped con la meta de navegación especificada.
+
+        Args:
+            x (float): Coordenada X de la meta.
+            y (float): Coordenada Y de la meta.
+            w (float): Componente w del cuaternión de orientación.
+
+        El mensaje se publica en el tópico /goal_pose con frame_id 'map' y el
+        timestamp actual.
+        """
         msg = PoseStamped()
         msg.header.frame_id = 'map'
         msg.header.stamp = self.get_clock().now().to_msg()
