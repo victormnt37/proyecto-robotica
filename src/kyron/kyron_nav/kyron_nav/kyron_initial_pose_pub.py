@@ -10,6 +10,11 @@ from geometry_msgs.msg import PoseWithCovarianceStamped
 class Publisher(Node):
 
     def __init__(self):
+        """Inicializa el nodo y configura un temporizador para publicar la pose inicial.
+
+        Crea un publicador en el tópico /initialpose y establece un temporizador que llama
+        al método callback cada 0.5 segundos para publicar la pose.
+        """
         super().__init__('initial_pose_pub_node')
         self.publisher_ = self.create_publisher(PoseWithCovarianceStamped, 'initialpose', 1)
         timer_period = 0.5  # seconds
@@ -17,6 +22,11 @@ class Publisher(Node):
         self.timer_ = self.create_timer(timer_period, self.callback)
 
     def callback(self):
+        """Publica un mensaje PoseWithCovarianceStamped con la posición inicial fija.
+
+        El mensaje contiene una pose fija en el marco 'map' con coordenadas (x, y) y
+        orientación w. Se publica en el tópico /initialpose.
+        """
         msg = PoseWithCovarianceStamped()
         msg.header.frame_id = 'map'
         msg.pose.pose.position.x = 0.5846771001815796 
