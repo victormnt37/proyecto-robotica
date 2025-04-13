@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', event => {
 
     // botones de dirección a salas
     const salas = [
+        { id: "sala-entrada", x: 0.0, y: 17.0, w: 0.0 },
         { id: "sala-recepcion", x: 0.0, y: 2.0, w: 0.0 },
         { id: "sala-5", x: -8.0, y: -8.0, w: 0.0 },
         { id: "sala-6", x: -7.0, y: -22.0, w: 0.0 },
