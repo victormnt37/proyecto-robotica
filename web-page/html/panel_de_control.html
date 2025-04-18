@@ -14,16 +14,11 @@
         integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
 
-
     <script src="https://cdn.jsdelivr.net/npm/easeljs@1/lib/easeljs.min.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/eventemitter2@6.4.9/lib/eventemitter2.min.js "></script>
     <script src="https://cdn.jsdelivr.net/npm/ros2d@0.10.0/build/ros2d.min.js"></script>
-  <!-- <script src="static/js/draw_occupancy_grid.js"></script>-->
     <script src="../js/mapa.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-    
-
-    
 </head>
 
 <!-- Botón flotante para abrir el chat -->
@@ -73,7 +68,7 @@
     <header class="header">
         <div class="container header-content">
             <a href="/" class="logo">
-                <img src="../assets/logo.jpeg" alt="Kyron Robotics" class="logo-img">
+                <img src="../assets/logo.png" alt="Kyron Robotics" class="logo-img">
                 <span class="logo-text">Kyron</span>
             </a>
             <div class="user-panel">
@@ -96,140 +91,132 @@
     </header>
 
     <main class="container">
-
         <div class="dashboard-layout">
-            <!-- Columna Izquierda (30%) -->
-            <aside class="sidebar">
-                <!-- Sección Estado del Robot -->
-                <section class="card robot-status">
-                    <h2>Estado del Robot</h2>
-                    <div class="status-grid">
-                        <div class="status-item">
-                            <div class="status-indicator"></div>
-                            <div>
-                                <h3>Introduce la dirección del rosbridge_server: </h3>
-                                <input type="text" name="rosbridge_server" id="rosbridge_server">
-                                <br>
-                                <button class="mt-2 btn btn-success" id="btn_con">Conectar</button>
-                                <button class="mt-2 btn btn-danger" id="btn_dis">Desconectar</button>
-                                <br>
-                                <br>
-                                <p>Estado de la conexion: <span id="estado">Desconectado</span></p>
-                            </div>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-indicator active"></div>
-                            <div>
-                                <h3>Conexión</h3>
-                                <p>Estable</p>
-                            </div>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-indicator active"></div>
-                            <div>
-                                <h3>Batería</h3>
-                                <p>87%</p>
-                            </div>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-indicator"></div>
-                            <div>
-                                <h3>Posicion actual</h3>
-                                <p>
-                                    <span>X: <span id="pos_x">...</span>
-                                        </span>
+            <!-- Sección Superior: Estado del Robot y Mapa -->
+            <div class="top-section">
+                <!-- Estado del Robot -->
+                <aside class="robot-status-section">
+                    <section class="card robot-status">
+                        <h2>Estado del Robot</h2>
+                        <div class="status-grid">
+                            <div class="status-item">
+                                <div class="status-indicator"></div>
+                                <div>
+                                    <h3>Introduce la dirección del rosbridge_server: </h3>
+                                    <input type="text" name="rosbridge_server" id="rosbridge_server">
                                     <br>
-                                        <span>Y: <span id="pos_y">...</span>
-                                        </span>
-                                </p>
+                                    <button class="mt-2 btn btn-success" id="btn_con">Conectar</button>
+                                    <button class="mt-2 btn btn-danger" id="btn_dis">Desconectar</button>
+                                    <br>
+                                    <br>
+                                    <p>Estado de la conexion: <span id="estado">Desconectado</span></p>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator active"></div>
+                                <div>
+                                    <h3>Conexión</h3>
+                                    <p>Estable</p>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator active"></div>
+                                <div>
+                                    <h3>Batería</h3>
+                                    <p>87%</p>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator"></div>
+                                <div>
+                                    <h3>Posicion actual</h3>
+                                    <p>
+                                        <span>X: <span id="pos_x">...</span>
+                                            </span>
+                                        <br>
+                                            <span>Y: <span id="pos_y">...</span>
+                                            </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-indicator"></div>
+                                <div>
+                                    <h3>Tarea Actual</h3>
+                                    <p>En espera</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="status-item">
-                            <div class="status-indicator"></div>
-                            <div>
-                                <h3>Tarea Actual</h3>
-                                <p>En espera</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </aside>
+                    </section>
+                </aside>
 
-            <!-- Columna Derecha (70%) -->
-            <div class="main-content">
-                <!-- Sección Mapa -->
-                <section class="card map-section">
+                <!-- Mapa -->
+                <section class="map-section card">
                     <h2>Mapa del Hospital</h2>
                     <div class="map-container">
                         <!-- Espacio reservado para mapa -->
                         <canvas id="mapCanvas"></canvas>
                     </div>
                 </section>
-
-                <section class="card camera-section">
-                    <div class="control-header">
-                        <h2>Control del Robot</h2>
-                        <button id="toggle-salas-dropdown" class="boton-verde small">Dirección a salas</button>
-                    </div>
-                
-                    <!-- DESPLEGABLE -->
-                    <div id="salas-dropdown" class="salas-dropdown hidden">
-                        <div class="salas-scroll">
-                            <button class="boton-sala" id="sala-entrada">Entrada</button>
-                            <button class="boton-sala" id="sala-recepcion">Recepción</button>
-                            <button class="boton-sala" id="sala-5">Sala 5</button>
-                            <button class="boton-sala" id="sala-6">Sala 6</button>
-                            <button class="boton-sala" id="sala-7">Sala 7</button>
-                            <button class="boton-sala" id="sala-8">Sala 8</button>
-                            <button class="boton-sala" id="sala-11">Sala 11</button>
-                            <button class="boton-sala" id="sala-12">Sala 12</button>
-                            <button class="boton-sala" id="sala-16">Sala 16</button>
-                            <button class="boton-sala" id="sala-1">Sala 1</button>
-                        </div>
-                    </div>
-                
-                    <div class="camera-preview">
-                        <div id="divCamera">
-                            <img id="cameraFeed" src="http://localhost:8080/stream?topic=/turtlebot3/camera/image_raw">
-                        </div>
-                    </div>
-                
-                    <div class="robot-controls">
-                        <button class="control-btn boton-verde" id="btn_move">
-                            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            Mover
-                        </button>
-                        <button class="control-btn boton-verde" id="btn_stop">
-                            <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                            Parar
-                        </button>
-                        <button class="control-btn boton-verde" id="btn_right">
-                            <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5v10z"/></svg>
-                            Derecha
-                        </button>
-                        <button class="control-btn boton-verde" id="btn_left">
-                            <svg viewBox="0 0 24 24"><path d="M14 7l-5 5 5 5V7z"/></svg>
-                            Izquierda
-                        </button>
-                    </div>
-                </section>
-                
             </div>
+
+            <!-- Sección Inferior: Control del Robot -->
+            <section class="control-section card">
+                <div class="control-header">
+                    <h2>Control del Robot</h2>
+                    <button id="toggle-salas-dropdown" class="boton-verde small">Dirección a salas</button>
+                </div>
+            
+                <!-- DESPLEGABLE -->
+                <div id="salas-dropdown" class="salas-dropdown hidden">
+                    <div class="salas-scroll">
+                        <button class="boton-sala" id="sala-entrada">Entrada</button>
+                        <button class="boton-sala" id="sala-recepcion">Recepción</button>
+                        <button class="boton-sala" id="sala-5">Sala 5</button>
+                        <button class="boton-sala" id="sala-6">Sala 6</button>
+                        <button class="boton-sala" id="sala-7">Sala 7</button>
+                        <button class="boton-sala" id="sala-8">Sala 8</button>
+                        <button class="boton-sala" id="sala-11">Sala 11</button>
+                        <button class="boton-sala" id="sala-12">Sala 12</button>
+                        <button class="boton-sala" id="sala-16">Sala 16</button>
+                        <button class="boton-sala" id="sala-1">Sala 1</button>
+                    </div>
+                </div>
+            
+                <div class="camera-preview">
+                    <div id="divCamera">
+                        <img id="cameraFeed" src="http://localhost:8080/stream?topic=/turtlebot3/camera/image_raw">
+                    </div>
+                </div>
+            
+                <div class="robot-controls">
+                    <button class="control-btn boton-verde" id="btn_move">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        Mover
+                    </button>
+                    <button class="control-btn boton-verde" id="btn_stop">
+                        <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        Parar
+                    </button>
+                    <button class="control-btn boton-verde" id="btn_right">
+                        <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5v10z"/></svg>
+                        Derecha
+                    </button>
+                    <button class="control-btn boton-verde" id="btn_left">
+                        <svg viewBox="0 0 24 24"><path d="M14 7l-5 5 5 5V7z"/></svg>
+                        Izquierda
+                    </button>
+                </div>
+            </section>
         </div>
     </main>
-
-    <!-- <footer class="main-footer">
-        <div class="container footer-content">
-            <p class="copyright">Kyron Registration © 2025 - Sistema de Gestión Hospitalaria</p>
-        </div>
-    </footer> -->
 
     <!-- Footer -->
     <footer class="main-footer">
         <div class="container footer-content">
             <p class="copyright">&copy; 2025 Kyron Registration - Sistema de Gestión Hospitalaria</p>
             <div class="footer-info">
-                <span>Contacto: soporte@kyronhealth.com</span>
+                <span>Contacto: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4e3d213e213c3a2b0e25373c2120262b2f223a26602d2123">[email&#160;protected]</a></span>
                 <nav class="social-links">
                     <a href="#" class="social-link">LinkedIn</a>
                     <a href="#" class="social-link">Twitter</a>
@@ -238,6 +225,7 @@
         </div>
     </footer>
 
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script>
         document.getElementById("toggle-salas-dropdown").addEventListener("click", () => {
             const dropdown = document.getElementById("salas-dropdown");
@@ -255,5 +243,6 @@
         document.getElementById("toggle-chat").addEventListener("click", toggleChat);
     </script>
     
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9324b24bfa4ebcc2',t:'MTc0NDk4NDkxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
