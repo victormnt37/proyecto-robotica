@@ -25,6 +25,49 @@
 
     
 </head>
+
+<!-- Botón flotante para abrir el chat -->
+<button id="toggle-chat" class="chat-toggle-btn">
+    💬
+</button>
+
+<!-- Panel deslizante de chat -->
+<aside id="chat-panel" class="chat-popup">
+    <div class="chat-popup-header">
+        <h2>Conversación con Paciente</h2>
+        <button onclick="toggleChat()" class="chat-close-btn">&times;</button>
+    </div>
+    <div class="chat-container chat-popup-body">
+        <div class="chat-messages">
+            <div class="message received">
+                <p>¿Podría explicarme el procedimiento?</p>
+                <span>10:24 AM</span>
+            </div>
+            <div class="message sent">
+                <p>Claro, es un examen de rutina sin dolor.</p>
+                <span>10:25 AM</span>
+            </div>
+            <!-- Más mensajes de ejemplo -->
+            <div class="message received">
+                <p>¿Necesito alguna preparación especial?</p>
+                <span>10:26 AM</span>
+            </div>
+            <div class="message sent">
+                <p>No, puede comer normalmente antes del examen.</p>
+                <span>10:26 AM</span>
+            </div>
+            <div class="message received">
+                <p>¿Cuánto tiempo tardarán los resultados?</p>
+                <span>10:27 AM</span>
+            </div>
+            <div class="message sent">
+                <p>Los resultados estarán disponibles en 24-48 horas.</p>
+                <span>10:28 AM</span>
+            </div>
+        </div>
+    </div>
+</aside>
+
 <body>
     <!-- Header Autenticado -->
     <header class="header">
@@ -53,6 +96,7 @@
     </header>
 
     <main class="container">
+
         <div class="dashboard-layout">
             <!-- Columna Izquierda (30%) -->
             <aside class="sidebar">
@@ -109,40 +153,6 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- Sección Conversación -->
-                <section class="card conversation">
-                    <h2>Conversación con Paciente</h2>
-                    <div class="chat-container">
-                        <div class="chat-messages">
-                            <div class="message received">
-                                <p>¿Podría explicarme el procedimiento?</p>
-                                <span>10:24 AM</span>
-                            </div>
-                            <div class="message sent">
-                                <p>Claro, es un examen de rutina sin dolor.</p>
-                                <span>10:25 AM</span>
-                            </div>
-                            <!-- Más mensajes de ejemplo -->
-                            <div class="message received">
-                                <p>¿Necesito alguna preparación especial?</p>
-                                <span>10:26 AM</span>
-                            </div>
-                            <div class="message sent">
-                                <p>No, puede comer normalmente antes del examen.</p>
-                                <span>10:26 AM</span>
-                            </div>
-                            <div class="message received">
-                                <p>¿Cuánto tiempo tardarán los resultados?</p>
-                                <span>10:27 AM</span>
-                            </div>
-                            <div class="message sent">
-                                <p>Los resultados estarán disponibles en 24-48 horas.</p>
-                                <span>10:28 AM</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </aside>
 
             <!-- Columna Derecha (70%) -->
@@ -156,56 +166,54 @@
                     </div>
                 </section>
 
-                <!-- Sección de Botones de dirección a Salas -->
-                 <section class="card direccion-salas">
-                    <h2>Dirección a salas</h2>
-                    <p>Selecciona una sala a la que dirigir al robot.</p>
-                    <div class="salas-container">
-                        <button class="boton-sala" id="sala-entrada">Entrada</button>
-                        <button class="boton-sala" id="sala-recepcion">Recepción</button>
-                        <button class="boton-sala" id="sala-5">Sala 5</button>
-                        <button class="boton-sala" id="sala-6">Sala 6</button>
-                        <button class="boton-sala" id="sala-7">Sala 7</button>
-                        <button class="boton-sala" id="sala-8">Sala 8</button>
-                        <button class="boton-sala" id="sala-11">Sala 11</button>
-                        <button class="boton-sala" id="sala-12">Sala 12</button>
-                        <button class="boton-sala" id="sala-16">Sala 16</button>
-                        <button class="boton-sala" id="sala-1">Sala 1</button>
-                    </div>
-                 </section>
-
-                <!-- Sección Cámara y Controles -->
                 <section class="card camera-section">
-                    <h2>Control del Robot</h2>
+                    <div class="control-header">
+                        <h2>Control del Robot</h2>
+                        <button id="toggle-salas-dropdown" class="boton-verde small">Dirección a salas</button>
+                    </div>
+                
+                    <!-- DESPLEGABLE -->
+                    <div id="salas-dropdown" class="salas-dropdown hidden">
+                        <div class="salas-scroll">
+                            <button class="boton-sala" id="sala-entrada">Entrada</button>
+                            <button class="boton-sala" id="sala-recepcion">Recepción</button>
+                            <button class="boton-sala" id="sala-5">Sala 5</button>
+                            <button class="boton-sala" id="sala-6">Sala 6</button>
+                            <button class="boton-sala" id="sala-7">Sala 7</button>
+                            <button class="boton-sala" id="sala-8">Sala 8</button>
+                            <button class="boton-sala" id="sala-11">Sala 11</button>
+                            <button class="boton-sala" id="sala-12">Sala 12</button>
+                            <button class="boton-sala" id="sala-16">Sala 16</button>
+                            <button class="boton-sala" id="sala-1">Sala 1</button>
+                        </div>
+                    </div>
+                
                     <div class="camera-preview">
-                        <!-- Espacio reservado para cámara -->
-                        <!-- <div class="camera-placeholder">
-                            <svg viewBox="0 0 24 24" fill="#94a3b8"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-                            <p>Vista en vivo de la cámara</p>
-                        </div> -->
                         <div id="divCamera">
                             <img id="cameraFeed" src="http://localhost:8080/stream?topic=/turtlebot3/camera/image_raw">
                         </div>
                     </div>
+                
                     <div class="robot-controls">
-                        <button class="control-btn btn-primary" id="btn_move">
+                        <button class="control-btn boton-verde" id="btn_move">
                             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             Mover
                         </button>
-                        <button class="control-btn btn-secondary" id="btn_stop">
+                        <button class="control-btn boton-verde" id="btn_stop">
                             <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                             Parar
                         </button>
-                        <button class="control-btn btn-primary" id="btn_right">
+                        <button class="control-btn boton-verde" id="btn_right">
                             <svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5v10z"/></svg>
                             Derecha
                         </button>
-                        <button class="control-btn btn-primary" id="btn_left">
+                        <button class="control-btn boton-verde" id="btn_left">
                             <svg viewBox="0 0 24 24"><path d="M14 7l-5 5 5 5V7z"/></svg>
                             Izquierda
                         </button>
                     </div>
                 </section>
+                
             </div>
         </div>
     </main>
@@ -229,5 +237,23 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.getElementById("toggle-salas-dropdown").addEventListener("click", () => {
+            const dropdown = document.getElementById("salas-dropdown");
+            dropdown.classList.toggle("hidden");
+        });
+    </script>    
+    
+    <script>
+        function toggleChat() {
+            const panel = document.getElementById("chat-panel");
+            panel.classList.toggle("open");
+        }
+    
+        // También cerrar al presionar botón flotante
+        document.getElementById("toggle-chat").addEventListener("click", toggleChat);
+    </script>
+    
 </body>
 </html>
