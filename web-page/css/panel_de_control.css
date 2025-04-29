@@ -1,24 +1,30 @@
-/* Estructura Principal */
+.container {
+    max-width: 65% !important;
+    padding: 0 2rem;
+}
+
 .dashboard-layout {
-    display: grid;
-    grid-template-columns: 1fr 3fr; /* 25% / 75% */
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
     margin: 2rem 0;
     min-height: calc(100vh - 150px);
-    align-items: start;
 }
 
-.sidebar {
+.top-section {
+    display: grid;
+    grid-template-columns: 1fr 3fr; /* 25% / 75% */
+    gap: 1rem;
+}
+
+.robot-status-section {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    height: 100%;
 }
 
-.main-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+.control-section {
+    width: 100%;
 }
 
 /* Estado del Robot - Flexible */
@@ -45,15 +51,15 @@
 
 .robot-status .status-grid {
     display: grid;
-    gap: 1rem;
-    margin-top: 1rem;
+    gap: 2rem;
+    margin-top: 0.5rem;
 }
 
 .status-item {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 0.8rem;
+    padding: 0.5rem;
     background: var(--light-gray);
     border-radius: 8px;
 }
@@ -160,7 +166,7 @@
 }
 
 .camera-preview {
-    aspect-ratio: 4/3; /* Relación típica de cámara */
+    aspect-ratio: 16/9; /* Relación típica de cámara */
     background: #e2e8f0;
     border-radius: 8px;
     margin-top: 1rem;
@@ -217,7 +223,7 @@
 }
 
 @media (max-width: 1024px) {
-    .dashboard-layout {
+    .top-section {
         grid-template-columns: 1fr;
     }
     
@@ -228,4 +234,175 @@
     .map-container, .camera-preview {
         aspect-ratio: 16/9;
     }
+}
+
+/* HEADER del control con botón */
+.control-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+/* Botón pequeño a la derecha */
+.boton-verde.small {
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+}
+
+/* Dropdown vertical con scroll */
+.salas-dropdown {
+    background-color: var(--light-gray);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    transition: max-height 0.3s ease;
+    overflow: hidden;
+}
+
+.salas-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.salas-dropdown.hidden {
+    display: none;
+}
+
+.card {
+    background: white;
+    border: none !important;
+    border-radius: 18px;  /* Aumentado de 12px */
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;  /* Sombra más intensa */
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card h2 {
+    font-size: 1.5rem;
+    color: var(--primary-green);
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--accent-teal);
+    padding-left: 0.75rem;
+    font-weight: 700;
+}
+
+/* Botones verdes unificados (estilo moderno) */
+.boton-verde {
+    background-color: var(--accent-teal);
+    color: white;
+    border: none;
+    padding: 0.9rem 1.2rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(64, 145, 108, 0.25);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.boton-verde:hover {
+    background-color: var(--primary-green);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(46, 139, 87, 0.3);
+}
+
+.control-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+/* BOTÓN flotante */
+.chat-toggle-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--accent-teal);
+    color: white;
+    font-size: 1.5rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 1000;
+    transition: background 0.3s;
+}
+
+.chat-toggle-btn:hover {
+    background-color: var(--primary-green);
+}
+
+/* PANEL de chat */
+.chat-popup {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 400px;
+    max-width: 90%;
+    height: 100%;
+    background: white;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+    transition: right 0.4s ease;
+}
+
+.chat-popup.open {
+    right: 0;
+}
+
+/* Header del chat popup */
+.chat-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    background-color: var(--accent-teal);
+    color: white;
+}
+
+.chat-popup-header h2 {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.chat-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+}
+
+/* Ajustar mensajes en popup */
+.chat-popup-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background-color: var(--light-gray);
+}
+
+.status-item, .map-container, .camera-preview, .salas-dropdown {
+    border-radius: 14px !important;  /* Aumentado de 8px */
+}
+
+.message {
+    border-radius: 12px !important;  /* Aumentado de 8px */
 }
