@@ -28,6 +28,11 @@
 }
 
 /* Estado del Robot - Flexible */
+.btn-conexion-container {
+    display: flex;
+    justify-content: space-around;
+}
+
 #btn_con, #btn_dis {
     margin-top: 10px;
     margin-right: 10px;

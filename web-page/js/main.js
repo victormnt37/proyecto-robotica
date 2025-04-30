@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', event => {
 
     // botones de dirección a salas
     const salas = [
-        { id: "sala-entrada", x: 0.0, y: 17.0, w: 0.0 },
+        { id: "sala-entrada", x: 0.0, y: 15.0, w: 0.0 },
         { id: "sala-recepcion", x: 0.0, y: 2.0, w: 0.0 },
         { id: "sala-5", x: -8.0, y: -8.0, w: 0.0 },
         { id: "sala-6", x: -7.0, y: -22.0, w: 0.0 },
@@ -45,13 +45,11 @@ document.addEventListener('DOMContentLoaded', event => {
 	    service_response: ''
     }
 
-    document.getElementById('rosbridge_server').value = data.rosbridge_address;
-
     function connect(){
 	    console.log("Clic en connect")
 
 	    data.ros = new ROSLIB.Ros({
-            url: document.getElementById('rosbridge_server').value
+            url: data.rosbridge_address
         })
 
         // Define callbacks
