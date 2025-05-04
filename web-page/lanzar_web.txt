@@ -29,7 +29,7 @@ ws://127.0.0.1:9090/
 cd ~/proyecto-robotica/
 export TURTLEBOT3_MODEL=burger_pi
 source install/setup.bash
-ros2 launch kyron_nav kyron_nav_sim.launch.py 
+ros2 launch kyron_nav kyron_nav_v2.launch.py 
 
 ### Terminal 2
 

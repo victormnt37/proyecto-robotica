@@ -7,7 +7,7 @@ gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 export TURTLEBOT3_MODEL=burger_pi
 source install/setup.bash
-ros2 launch kyron_nav kyron_nav_sim.launch.py
+ros2 launch kyron_nav kyron_nav_v2.launch.py
 exec bash"
 
 # Terminal 2 - Esperar 3 minutos y luego cargar mapa + pose inicial
