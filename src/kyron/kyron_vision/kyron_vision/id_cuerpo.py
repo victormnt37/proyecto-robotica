@@ -6,10 +6,16 @@ from sensor_msgs.msg import Image
 from rclpy.node import Node
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 
-class ID_Cuerpo(Node):   
+ 
+class ID_Cuerpo(Node):
+   
+   
 
     def __init__(self):
-
+        """ID_Cuerpo
+            Identifica cuerpos y aplica un ROI sobre este. 
+            Sobre el ROI identifica segun el color de la ropa si la persona es enfermera o paciente
+        """  
         super().__init__('ID_Cuerpo')
         
         self.bridge_object = CvBridge()
@@ -27,21 +33,56 @@ class ID_Cuerpo(Node):
             # Cargamos los clasificadores
             fullbody=cv2.CascadeClassifier('src/kyron/kyron_vision/clasificadores/haarcascade_fullbody.xml')
 
-            # Detectamos caras
+            # Detectamos cuerpos
             bodies = fullbody.detectMultiScale(img_gray, 1.1, 5)
+            _,res = self.includes_x_color(cv_image)
+
+
+
 
             # Para cada cuerpo detectado, dibujamos un rectángulo
             for (x,y,w,h) in bodies:
                 cv2.rectangle(cv_image,(x,y),(x+w,y+h),(255,0,0),2)
-                roi_color = cv_image[y:y+h, x:x+w]
+                roi = cv_image[y:y+h, x:x+w]
+
+                color,res = self.includes_x_color(roi)
+                cv2.putText(roi, f"Color: {color}", (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
+
+
                 
 
         except CvBridgeError as e:
             print(e)
 
         cv2.imshow("Imagen capturada por el robot", cv_image)
+        cv2.imshow("debug",res)
+
                 
-        cv2.waitKey(1)    
+        cv2.waitKey(1) 
+
+
+    def includes_x_color(self, img):
+        """
+        Detecta si hay color blanco en la imagen ROI.
+        """
+
+        hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+
+        # Rango ajustado para blanco
+        minimo = np.array([0, 0, 180])
+        maximo = np.array([180, 50, 255])
+
+        mask = cv2.inRange(hsv_img, minimo, maximo)
+        result = cv2.bitwise_and(img, img, mask=mask)
+
+        # Si hay muchos píxeles blancos, lo consideramos detectado
+        if cv2.countNonZero(mask) > 550:
+            return 'blanco' , result
+        else:
+            return 'ninguno'
+
+
 
 def main(args=None):
 
