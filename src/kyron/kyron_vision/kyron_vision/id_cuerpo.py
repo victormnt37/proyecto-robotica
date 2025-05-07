@@ -9,7 +9,6 @@ from rclpy.qos import ReliabilityPolicy, QoSProfile
  
 class ID_Cuerpo(Node):
    
-   
 
     def __init__(self):
         """ID_Cuerpo
@@ -35,7 +34,7 @@ class ID_Cuerpo(Node):
 
             # Detectamos cuerpos
             bodies = fullbody.detectMultiScale(img_gray, 1.1, 5)
-            _,res = self.includes_x_color(cv_image)
+            #_,res = self.includes_x_color(cv_image)
 
 
 
@@ -45,42 +44,75 @@ class ID_Cuerpo(Node):
                 cv2.rectangle(cv_image,(x,y),(x+w,y+h),(255,0,0),2)
                 roi = cv_image[y:y+h, x:x+w]
 
-                color,res = self.includes_x_color(roi)
-                cv2.putText(roi, f"Color: {color}", (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
-
-
-                
+                cv2.putText(roi, f"{self.id_uniforme(roi)}", (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
+   
 
         except CvBridgeError as e:
             print(e)
 
         cv2.imshow("Imagen capturada por el robot", cv_image)
-        cv2.imshow("debug",res)
+        #cv2.imshow("debug",res)
 
                 
         cv2.waitKey(1) 
 
 
-    def includes_x_color(self, img):
-        """
-        Detecta si hay color blanco en la imagen ROI.
+    def id_uniforme(self,img):
+        """identifica si una persona es doctora o enfermera basado en su uniforme
+
+        Args:
+            img (_type_): imagen a evaluar
+
+        Returns:
+            personal: string que dice si es enfermera o medica o visitante
         """
 
+        #Hashmap de colores con sus respetivos rangos:
+        color_ranges = {'blanco': [np.array([0, 0, 180]), np.array([180, 50, 255])],
+                        'celeste': [np.array([90, 50, 50]), np.array([130, 255, 255])],
+                        'azul':[np.array([100, 150, 0]), np.array([140, 255, 255])]
+                        }
+
+
+        
+        #if self.includes_x_color(img,color_ranges['blanco']):
+           # return "Doctor/Doctora"
+        
+        if self.includes_x_color(img,color_ranges['celeste']):
+            return "Paciente"
+        
+        elif self.includes_x_color(img,color_ranges['azul']):
+            return "Enfermera/Enfermero"
+        
+        #Si no encuentra ningun color
+        return "??"
+        
+
+    def includes_x_color(self, img,rango_colores):
+        """
+        Devuelve true si hay suficientes pixeles en la imagen con el color que se busca
+
+        Args:
+        img= imagen que queremos evaluar
+
+        rango_colores= rango de colores para que pueda encontrarlos.
+
+        Returns:
+        T/F
+        """
         hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-
-        # Rango ajustado para blanco
-        minimo = np.array([0, 0, 180])
-        maximo = np.array([180, 50, 255])
+        # Rango ajustado para el color selecionado
+        minimo, maximo = rango_colores
 
         mask = cv2.inRange(hsv_img, minimo, maximo)
-        result = cv2.bitwise_and(img, img, mask=mask)
+        #result = cv2.bitwise_and(img, img, mask=mask)
 
         # Si hay muchos píxeles blancos, lo consideramos detectado
         if cv2.countNonZero(mask) > 550:
-            return 'blanco' , result
+            return True
         else:
-            return 'ninguno'
+            return False
 
 
 
@@ -93,7 +125,7 @@ def main(args=None):
         rclpy.spin(img_converter_object)
     except KeyboardInterrupt:
         img_converter_object.destroy_node()
-        print("Fin del programa!")
+        print("Id_cuerpo ha cerrado!")
     
     cv2.destroyAllWindows() 
     
