@@ -20,7 +20,11 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'capture_image=kyron_vision.capture_image:main'
+            'capture_image=kyron_vision.capture_image:main',
+            'id_cuerpo=kyron_vision.id_cuerpo:main',
+            'id_color=kyron_vision.id_color:main',
+            'id_cara=kyron_vision.id_cara:main'
+
         ],
     },
 )
