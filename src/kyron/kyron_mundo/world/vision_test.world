@@ -58,10 +58,17 @@
     </model>
 
 
-    <model name="Dr Doom">
+    <model name="Paciente">
       <include>
         <pose>3.0 -0.5 0.0 0.0 0.0 3.1</pose>
-        <uri>model://Marvel_Avengers_Titan_Hero_Series_Doctor_Doom</uri>
+        <uri>model://PatientWheelChair</uri>
+      </include>
+    </model>
+
+    <model name="OpScrubs">
+      <include>
+        <pose>3.0 -0.5 0.0 0.0 0.0 3.1</pose>
+        <uri>model://OpScrubs</uri>
       </include>
     </model>
 

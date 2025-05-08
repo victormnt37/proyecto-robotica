@@ -64,25 +64,29 @@ class ID_Cuerpo(Node):
             img (_type_): imagen a evaluar
 
         Returns:
-            personal: string que dice si es enfermera o medica o visitante
+            string que dice si es enfermera o medica o visitante
         """
 
         #Hashmap de colores con sus respetivos rangos:
         color_ranges = {'blanco': [np.array([0, 0, 180]), np.array([180, 50, 255])],
-                        'celeste': [np.array([90, 50, 50]), np.array([130, 255, 255])],
-                        'azul':[np.array([100, 150, 0]), np.array([140, 255, 255])]
+                        'celeste': [np.array([100, 50, 50]), np.array([120, 255, 255])],
+                        'azul_oscuro':[np.array([100, 100, 50]), np.array([120, 255, 150])],
+                        'verde_azulado':[np.array([55, 100, 80]), np.array([75, 255, 255])]
                         }
 
 
         
         #if self.includes_x_color(img,color_ranges['blanco']):
-           # return "Doctor/Doctora"
+           #return "Doctor/Doctora"
         
         if self.includes_x_color(img,color_ranges['celeste']):
             return "Paciente"
         
-        elif self.includes_x_color(img,color_ranges['azul']):
+        elif self.includes_x_color(img,color_ranges['azul_oscuro']):
             return "Enfermera/Enfermero"
+        
+        elif self.includes_x_color(img,color_ranges['verde_azulado']):
+            return "Cirujano"
         
         #Si no encuentra ningun color
         return "??"
@@ -107,9 +111,10 @@ class ID_Cuerpo(Node):
 
         mask = cv2.inRange(hsv_img, minimo, maximo)
         #result = cv2.bitwise_and(img, img, mask=mask)
+        
 
-        # Si hay muchos píxeles blancos, lo consideramos detectado
-        if cv2.countNonZero(mask) > 550:
+        # Si hay muchos píxeles del color buscado , lo consideramos detectado
+        if cv2.countNonZero(mask) > 800: #Cuenta los pixeles en la mascara aplicandole el rang.
             return True
         else:
             return False
