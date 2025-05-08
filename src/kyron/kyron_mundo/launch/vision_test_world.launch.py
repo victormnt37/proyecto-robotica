@@ -11,7 +11,7 @@ from launch_ros.actions import Node
 TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
 
 def generate_launch_description():
-    world_file_name = 'world/vision_test2.world'
+    world_file_name = 'world/vision_test.world'
 
     urdf_file_name = 'urdf/turtlebot3_' + TURTLEBOT3_MODEL + '.urdf'
 
