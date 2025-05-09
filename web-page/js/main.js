@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', event => {
     document.getElementById("btn_con").addEventListener("click", connect)
     document.getElementById("btn_dis").addEventListener("click", disconnect)
     estado = document.getElementById('estado')
+    iconoEstado = document.getElementById('connection-status')
     document.getElementById("btn_move").addEventListener("click", move)
     document.getElementById("btn_stop").addEventListener("click", stop)
     document.getElementById("btn_right").addEventListener("click", derecha)
@@ -57,16 +58,21 @@ document.addEventListener('DOMContentLoaded', event => {
             data.connected = true
             console.log("Conexion con ROSBridge correcta")
             estado.innerHTML = 'Conectado'
+            iconoEstado.classList.add('active')
+            
         })
         data.ros.on("error", (error) => {
             console.log("Se ha producido algun error mientras se intentaba realizar la conexion")
             console.log(error)
             estado.innerHTML = 'Desconectado'
+            iconoEstado.classList.remove('active')
         })
         data.ros.on("close", () => {
             data.connected = false
             console.log("Conexion con ROSBridge cerrada")
             estado.innerHTML = 'Desconectado'
+            iconoEstado.classList.remove('active')
+
         })
 
         let topic = new ROSLIB.Topic({
