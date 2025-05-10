@@ -10,15 +10,15 @@ from rclpy.qos import ReliabilityPolicy, QoSProfile
 
 
 class ID_Cara(Node):  
-    """
-    ID_Cara
-
-    Este nodo se encarga de identificar rostros en las fotos capturadas por el robot usando open cv y face recognition
-
-    """ 
+   
 
     def __init__(self):
+        """
+        ID_Cara
 
+        Este nodo se encarga de identificar rostros en las fotos capturadas por el robot usando open cv y face recognition
+
+        """ 
         topic_img_sim='/camera/image_raw'
         topic_img_irl='/image'
 

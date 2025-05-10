@@ -8,17 +8,21 @@ from rclpy.qos import ReliabilityPolicy, QoSProfile
 
  
 class ID_Cuerpo(Node):
-   
+    
 
     def __init__(self):
         """ID_Cuerpo
             Identifica cuerpos y aplica un ROI sobre este. 
-            Sobre el ROI identifica segun el color de la ropa si la persona es enfermera o paciente
+            Sobre el ROI identifica segun el color de la ropa y si lleva un badge
+            si la persona es enfermera o paciente
         """  
+        
+        topic_img_sim='/camera/image_raw'
+        topic_img_irl='/image'
         super().__init__('ID_Cuerpo')
         
         self.bridge_object = CvBridge()
-        self.image_sub = self.create_subscription(Image,'/camera/image_raw',self.camera_callback,QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
+        self.image_sub = self.create_subscription(Image,topic_img_sim,self.camera_callback,QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         
     def camera_callback(self,data):
 
@@ -34,9 +38,6 @@ class ID_Cuerpo(Node):
 
             # Detectamos cuerpos
             bodies = fullbody.detectMultiScale(img_gray, 1.1, 5)
-            #_,res = self.includes_x_color(cv_image)
-
-
 
 
             # Para cada cuerpo detectado, dibujamos un rectángulo
@@ -44,59 +45,59 @@ class ID_Cuerpo(Node):
                 cv2.rectangle(cv_image,(x,y),(x+w,y+h),(255,0,0),2)
                 roi = cv_image[y:y+h, x:x+w]
 
-                cv2.putText(roi, f"{self.id_uniforme(roi)}", (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
+                cv2.putText(roi, f"{self.id_por_uniforme(roi)}", (5, 15), cv2.FONT_HERSHEY_PLAIN, 0.8, (0,255,0), 1)
    
 
         except CvBridgeError as e:
             print(e)
 
-        cv2.imshow("Imagen capturada por el robot", cv_image)
+        cv2.imshow("Identificadno personas por el cuerpo", cv_image)
                 
         cv2.waitKey(1) 
 
 
-    def id_uniforme(self,img):
+    def id_por_uniforme(self,img):
         """identifica si una persona es doctora o enfermera basado en su uniforme
 
         Args:
-            img (_type_): imagen a evaluar
+            img (img): imagen a evaluar
 
         Returns:
             string que dice si es enfermera o medica o visitante
         """
 
         #Hashmap de colores con sus respetivos rangos:
-        color_ranges = {
-                    'blanco': self.get_color_range([255, 255, 255]),  # BGR Blanco
-                    'celeste': self.get_color_range([255, 191, 0]),    # BGR Celeste
-                    'azul_oscuro': self.get_color_range([139, 0, 0]),  # BGR Azul oscuro
-                    'verde_azulado': self.get_color_range([170, 170, 0])  # BGR Verde azulado
+        color = {
+                    'blanco': self.get_color_range([255, 255, 255]),  # BGR Dr
+                    'celeste': self.get_color_range([255, 191, 0]),    # BGR Internado
+                    'azul_oscuro': self.get_color_range([177, 106, 64]),  # BGR Enfermer
+                    'verde_azulado': self.get_color_range([178, 162, 42])  # BGR Cirujano
                 }
         
         #booleano
         has_badge=self.has_badge(img)
 
 
-        if self.includes_x_color(img,color_ranges['celeste']):
-            return "Paciente"
+        if self.includes_x_color(img,color['celeste']):
+            return "Internad@"
         
-        if self.includes_x_color(img,color_ranges['blanco'])and has_badge:
-           return "Doctor/Doctora"
+        if self.includes_x_color(img,color['blanco'])and has_badge:
+           return "Dr/Dra"
         
-        elif self.includes_x_color(img,color_ranges['azul_oscuro']) and has_badge:
-            return "Enfermera/Enfermero"
+        elif self.includes_x_color(img,color['azul_oscuro']) and has_badge:
+            return "Enfermer@"
         
-        elif self.includes_x_color(img,color_ranges['verde_azulado']) and has_badge:
-            return "Cirujano"
+        elif self.includes_x_color(img,color['verde_azulado']) and has_badge:
+            return "Cirujan@"
         
         #Si no encuentra ningun color
-        return "??"
+        return "Paciente"
         
 
     def includes_x_color(self, img,rango_colores):
         """
         Devuelve true si hay suficientes pixeles en la imagen con el color que se busca
-
+        
         Args:
         img= imagen que queremos evaluar
 
@@ -121,7 +122,7 @@ class ID_Cuerpo(Node):
             return False
     
 
-    def has_badge(self, img, min_area=400, aspect_ratio_range=(0.4, 1.5)):
+    def has_badge(self, img, min_area=300, aspect_ratio_range=(0.4, 2.5)):
         """
         Detecta si existe un badge cuadrado o rectangular en la imagen (como un gafete).
 
@@ -134,33 +135,33 @@ class ID_Cuerpo(Node):
             bool: True si se encuentra un badge válido
         """
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
         _, thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY_INV)
         thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, np.ones((3,3), np.uint8))
 
         contornos, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        for cnt in contornos:
-            if cv2.contourArea(cnt) < min_area:
+        for contorno in contornos:
+            if cv2.contourArea(contorno) < min_area:
                 continue
 
-            peri = cv2.arcLength(cnt, True)
-            approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
+            peri = cv2.arcLength(contorno, True)
+            approx = cv2.approxPolyDP(contorno, 0.02 * peri, True)
 
             if len(approx) == 4:
                 x, y, w, h = cv2.boundingRect(approx)
                 aspect_ratio = float(w) / h
 
                 if aspect_ratio_range[0] <= aspect_ratio <= aspect_ratio_range[1]:
-                    hull = cv2.convexHull(cnt)
+                    hull = cv2.convexHull(contorno)
                     hull_area = cv2.contourArea(hull)
                     if hull_area > 0:
-                        solidity = float(cv2.contourArea(cnt)) / hull_area
+                        solidity = float(cv2.contourArea(contorno)) / hull_area
                         if solidity > 0.85:
                             return True
 
         return False
 
-    
 
     
     def get_color_range(self,color_BGR):
@@ -182,6 +183,7 @@ class ID_Cuerpo(Node):
         if hue >= 165:  # Upper limit for divided red hue
             lowerLimit = np.array([hue - 10, 100, 100], dtype=np.uint8)
             upperLimit = np.array([180, 255, 255], dtype=np.uint8)
+
         elif hue <= 15:  # Lower limit for divided red hue
             lowerLimit = np.array([0, 100, 100], dtype=np.uint8)
             upperLimit = np.array([hue + 10, 255, 255], dtype=np.uint8)
