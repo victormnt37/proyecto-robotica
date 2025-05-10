@@ -15,11 +15,10 @@ class GoalActionClient(Node):
     def __init__(self, x, y, w):
         super().__init__('goal_action_client')
         self._action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
-        # estados del robot
         self.state_pub = self.create_publisher(String, '/robot_state', 10)
-        self.command_sub = self.create_subscription(String, '/robot_command', self.command_callback, 10)
+        self.state_sub = self.create_subscription(String, '/robot_state', self.state_callback, 10)
         self.goal_handle = None
-        self.current_command = 'GOING_TO_ROOM'
+        self.current_state = 'IDLE'
 
         self.x = x
         self.y = y
@@ -31,24 +30,20 @@ class GoalActionClient(Node):
         self.state_pub.publish(msg)
         self.get_logger().info(f'[ESTADO] {state_str}')
 
-    def command_callback(self, msg):
-        self.get_logger().info(f'[COMANDO RECIBIDO] {msg.data}')
-        if msg.data in ['STOP', 'PATROLLING']:
-            self.current_command = msg.data
-            if self.goal_handle:
-                self.get_logger().warn('Cancelando navegación por interrupción...')
-                self.goal_handle.cancel_goal_async()
-                self.publish_state('INTERRUPTED')
+    def state_callback(self, msg):
+        self.current_state = msg.data
 
     def send_goal(self):
         self._action_client.wait_for_server()
 
-        if self.current_command != 'GOING_TO_ROOM':
-            self.get_logger().warn('Otra acción está activa. Cancelando movimiento.')
-            self.publish_state('INTERRUPTED')
-            rclpy.shutdown()
-            return
+        if self.current_state in ['PATROLLING', 'GOING_TO_ROOM', 'STOPPED']:
+            self.get_logger().warn(f'Acción en conflicto detectada ({self.current_state}), cancelando...')
+            cancel_future = self._action_client.cancel_all_goals_async()
+            cancel_future.add_done_callback(self.continue_with_goal)
+        else:
+            self.continue_with_goal()
 
+    def continue_with_goal(self, future=None):
         goal_msg = NavigateToPose.Goal()
         goal_msg.pose.header.frame_id = 'map'
         goal_msg.pose.header.stamp = self.get_clock().now().to_msg()
@@ -97,7 +92,7 @@ def main():
 
     rclpy.init()
     node = GoalActionClient(args.x, args.y, args.w)
-    time.sleep(0.5)  # tiempo breve para recibir posibles comandos antes de empezar
+    time.sleep(0.5)
     node.send_goal()
     rclpy.spin(node)
 

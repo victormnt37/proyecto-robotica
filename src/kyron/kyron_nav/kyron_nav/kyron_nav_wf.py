@@ -10,13 +10,15 @@ class WaypointFollower(Node):
     def __init__(self):
         super().__init__('kyron_nav_wf')
         self._action_client = ActionClient(self, FollowWaypoints, 'follow_waypoints')
-        # estados del robot
         self.state_pub = self.create_publisher(String, '/robot_state', 10)
-        self.command_sub = self.create_subscription(String, '/robot_command', self.command_callback, 10)
-        self.current_command = 'PATROLLING'
+        self.state_sub = self.create_subscription(String, '/robot_state', self.state_callback, 10)
+        self.current_state = 'IDLE'
         self.goal_handle = None
-        
+
         self.get_logger().info('Waypoint client iniciado')
+
+    def state_callback(self, msg):
+        self.current_state = msg.data
 
     def define_waypoints(self):
         puntos = [
@@ -77,8 +79,7 @@ class WaypointFollower(Node):
     def feedback_callback(self, feedback_msg):
         current_waypoint = feedback_msg.feedback.current_waypoint
         self.get_logger().info(f'waypoint_actual: {current_waypoint}')
-        # Verifica si el usuario mandó detener
-        if self.current_command != 'PATROLLING':
+        if self.current_state != 'PATROLLING':
             self.get_logger().warn('Interrupción recibida. Cancelando patrullaje...')
             self.goal_handle.cancel_goal_async()
             self.publish_state('INTERRUPTED')
@@ -91,20 +92,14 @@ class WaypointFollower(Node):
         self.publish_state('IDLE')
         rclpy.shutdown()
 
-    def command_callback(self, msg):
-        self.get_logger().info(f'[COMANDO RECIBIDO] {msg.data}')
-        if msg.data in ['STOP', 'GOING_TO_ROOM']:
-            self.current_command = msg.data
-
 def main(args=None):
     rclpy.init(args=args)
     waypoint_client = WaypointFollower()
     waypoints = waypoint_client.define_waypoints()
 
-    # Espera breve para comprobar si hay una interrupción reciente
     time.sleep(0.5)
-    if waypoint_client.current_command != 'PATROLLING':
-        waypoint_client.get_logger().warn('Otro comportamiento activo. Cancelando patrullaje.')
+    if waypoint_client.current_state in ['GOING_TO_ROOM', 'STOPPED']:
+        waypoint_client.get_logger().warn(f'Acción incompatible detectada ({waypoint_client.current_state}), cancelando patrulla.')
         waypoint_client.publish_state('INTERRUPTED')
         rclpy.shutdown()
         return
