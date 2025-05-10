@@ -72,18 +72,21 @@ class ID_Cuerpo(Node):
                     'azul_oscuro': self.get_color_range([139, 0, 0]),  # BGR Azul oscuro
                     'verde_azulado': self.get_color_range([170, 170, 0])  # BGR Verde azulado
                 }
+        
+        #booleano
+        has_badge=self.has_badge(img)
 
 
         if self.includes_x_color(img,color_ranges['celeste']):
             return "Paciente"
         
-        if self.includes_x_color(img,color_ranges['blanco']):
+        if self.includes_x_color(img,color_ranges['blanco'])and has_badge:
            return "Doctor/Doctora"
         
-        elif self.includes_x_color(img,color_ranges['azul_oscuro']):
+        elif self.includes_x_color(img,color_ranges['azul_oscuro']) and has_badge:
             return "Enfermera/Enfermero"
         
-        elif self.includes_x_color(img,color_ranges['verde_azulado']):
+        elif self.includes_x_color(img,color_ranges['verde_azulado']) and has_badge:
             return "Cirujano"
         
         #Si no encuentra ningun color
@@ -117,9 +120,51 @@ class ID_Cuerpo(Node):
         else:
             return False
     
+
+    def has_badge(self, img, min_area=400, aspect_ratio_range=(0.4, 1.5)):
+        """
+        Detecta si existe un badge cuadrado o rectangular en la imagen (como un gafete).
+
+        Args:
+            img: Imagen a evaluar (BGR)
+            min_area: Área mínima para considerar un contorno como badge
+            aspect_ratio_range: Rango permitido para relación ancho/alto
+
+        Returns:
+            bool: True si se encuentra un badge válido
+        """
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        _, thresh = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY_INV)
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, np.ones((3,3), np.uint8))
+
+        contornos, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        for cnt in contornos:
+            if cv2.contourArea(cnt) < min_area:
+                continue
+
+            peri = cv2.arcLength(cnt, True)
+            approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
+
+            if len(approx) == 4:
+                x, y, w, h = cv2.boundingRect(approx)
+                aspect_ratio = float(w) / h
+
+                if aspect_ratio_range[0] <= aspect_ratio <= aspect_ratio_range[1]:
+                    hull = cv2.convexHull(cnt)
+                    hull_area = cv2.contourArea(hull)
+                    if hull_area > 0:
+                        solidity = float(cv2.contourArea(cnt)) / hull_area
+                        if solidity > 0.85:
+                            return True
+
+        return False
+
+    
+
     
     def get_color_range(self,color_BGR):
-        """_summary_
+        """Recibe un codigo de colores BGR y le saca su rango.
 
         Args:
             color_BGR (list): codigo bgr del color que queremos conseguir su color range.
