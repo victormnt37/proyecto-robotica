@@ -51,8 +51,6 @@ class ID_Cuerpo(Node):
             print(e)
 
         cv2.imshow("Imagen capturada por el robot", cv_image)
-        #cv2.imshow("debug",res)
-
                 
         cv2.waitKey(1) 
 
@@ -68,19 +66,19 @@ class ID_Cuerpo(Node):
         """
 
         #Hashmap de colores con sus respetivos rangos:
-        color_ranges = {'blanco': [np.array([0, 0, 180]), np.array([180, 50, 255])],
-                        'celeste': [np.array([100, 50, 50]), np.array([120, 255, 255])],
-                        'azul_oscuro':[np.array([100, 100, 50]), np.array([120, 255, 150])],
-                        'verde_azulado':[np.array([55, 100, 80]), np.array([75, 255, 255])]
-                        }
+        color_ranges = {
+                    'blanco': self.get_color_range([255, 255, 255]),  # BGR Blanco
+                    'celeste': self.get_color_range([255, 191, 0]),    # BGR Celeste
+                    'azul_oscuro': self.get_color_range([139, 0, 0]),  # BGR Azul oscuro
+                    'verde_azulado': self.get_color_range([170, 170, 0])  # BGR Verde azulado
+                }
 
 
-        
-        #if self.includes_x_color(img,color_ranges['blanco']):
-           #return "Doctor/Doctora"
-        
         if self.includes_x_color(img,color_ranges['celeste']):
             return "Paciente"
+        
+        if self.includes_x_color(img,color_ranges['blanco']):
+           return "Doctor/Doctora"
         
         elif self.includes_x_color(img,color_ranges['azul_oscuro']):
             return "Enfermera/Enfermero"
@@ -114,10 +112,39 @@ class ID_Cuerpo(Node):
         
 
         # Si hay muchos píxeles del color buscado , lo consideramos detectado
-        if cv2.countNonZero(mask) > 800: #Cuenta los pixeles en la mascara aplicandole el rang.
+        if cv2.countNonZero(mask) > 900: #Cuenta los pixeles en la mascara aplicandole el rang.
             return True
         else:
             return False
+    
+    
+    def get_color_range(self,color_BGR):
+        """_summary_
+
+        Args:
+            color_BGR (list): codigo bgr del color que queremos conseguir su color range.
+
+        Returns:
+            lowerlimit,upperlimit(list): rango de colores para su detection
+        """
+
+        c = np.uint8([[color_BGR]])  # BGR values
+        hsvC = cv2.cvtColor(c, cv2.COLOR_BGR2HSV)
+
+        hue = hsvC[0][0][0]  # Get the hue value
+
+        # Handle red hue wrap-around
+        if hue >= 165:  # Upper limit for divided red hue
+            lowerLimit = np.array([hue - 10, 100, 100], dtype=np.uint8)
+            upperLimit = np.array([180, 255, 255], dtype=np.uint8)
+        elif hue <= 15:  # Lower limit for divided red hue
+            lowerLimit = np.array([0, 100, 100], dtype=np.uint8)
+            upperLimit = np.array([hue + 10, 255, 255], dtype=np.uint8)
+        else:
+            lowerLimit = np.array([hue - 10, 100, 100], dtype=np.uint8)
+            upperLimit = np.array([hue + 10, 255, 255], dtype=np.uint8)
+
+        return lowerLimit, upperLimit
 
 
 
