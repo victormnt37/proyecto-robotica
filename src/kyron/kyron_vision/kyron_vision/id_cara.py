@@ -11,7 +11,6 @@ from rclpy.qos import ReliabilityPolicy, QoSProfile
 
 class ID_Cara(Node):  
    
-
     def __init__(self):
         """
         ID_Cara
@@ -19,15 +18,26 @@ class ID_Cara(Node):
         Este nodo se encarga de identificar rostros en las fotos capturadas por el robot usando open cv y face recognition
 
         """ 
-        topic_img_sim='/camera/image_raw'
-        topic_img_irl='/image'
-
         super().__init__('ID_Cara')
+
+        # Declarar el parámetro con valor por defecto
+
+        self.declare_parameter('modo', 'sim')  # puede ser 'sim' o 'irl'
+        
+        modo = self.get_parameter('modo').get_parameter_value().string_value
+
+
+        # Elegir el topic en función del parámetro
+        topic_img_sim = '/camera/image_raw'
+        topic_img_irl = '/image'
+        topic_seleccionado = topic_img_sim if modo == 'sim' else topic_img_irl
+
+        self.get_logger().info(f"Usando el topic: {topic_seleccionado}")
         
         self.caras_conocidas=self.cargar_caras()
         
         self.bridge_object = CvBridge()
-        self.image_sub = self.create_subscription(Image,topic_img_sim,self.camera_callback,QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
+        self.image_sub = self.create_subscription(Image,topic_seleccionado,self.camera_callback,QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         
     def camera_callback(self,data):
 
@@ -45,26 +55,31 @@ class ID_Cara(Node):
 
             # Cargamos los clasificadores
             face_cascade = cv2.CascadeClassifier('src/kyron/kyron_vision/clasificadores/haarcascade_frontalface_default.xml')
-            eye_cascade = cv2.CascadeClassifier('src/kyron/kyron_vision/clasificadores/haarcascade_eye.xml')
-
             # Detectamos caras
             faces = face_cascade.detectMultiScale(img_gray, 1.1, 5)
 
-            # Para cada cara detectada, dibujamos un rectángulo
-            for (x,y,w,h) in faces:
-                cv2.rectangle(cv_image,(x,y),(x+w,y+h),(35,101,51),1)
-                roi = cv_image[y:y+h, x:x+w]
-                print(f"He detectado a: {self.reconocer_caras(roi)}")
+            for (x, y, w, h) in faces:
+                pad = 0.2
+                x0 = max(int(x - w*pad), 0)
+                y0 = max(int(y - h*pad), 0)
+                x1 = min(int(x + w*(1+pad)), cv_image.shape[1])
+                y1 = min(int(y + h*(1+pad)), cv_image.shape[0])
 
+                roi = cv_image[y0:y1, x0:x1]
 
+                nombre = self.reconocer_caras(roi)
 
-            #cv2.putText(roi, f"{self.reconocer_caras(roi)}", (5, 15), cv2.FONT_HERSHEY_PLAIN, 0.4, (0,255,0), 1)
-                
+                print(f'Nombre detectado: {nombre}')  # Verifica que no sea vacío
+
+                # Dibujar rectángulo y texto
+                cv2.rectangle(cv_image, (x, y), (x+w, y+h), (35, 101, 51), 2)
+                cv2.putText(cv_image, nombre, (x, max(y - 10, 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
+
 
         except CvBridgeError as e:
             print(e)
 
-        cv2.imshow("Imagen capturada por el robot", cv_image)
+        cv2.imshow("Identificando Caras", cv_image)
                 
         cv2.waitKey(1)   
     
@@ -78,24 +93,25 @@ class ID_Cara(Node):
         Returns:
             nombre de la persona
         """
-        if not self.caras_conocidas:
-            return 'Sin caras cargadas'
-        
-        rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        encodings = face_recognition.face_encodings(rgb_img)
+        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-
-        if not encodings:
+        # 1) Primero pregunto dónde ve rostros
+        locations = face_recognition.face_locations(rgb)
+        if not locations:
             return "Sin rostro detectado"
-        
-        cara = encodings[0]
 
-        for nombre, encoding in self.known_faces.items():
-            match = face_recognition.compare_faces([encoding], cara)[0]
+        # 2) Ahora sí, codifico usando esas ubicaciones
+        encodings = face_recognition.face_encodings(rgb, locations)
+        cara_encoding = encodings[0]
+
+        # 3) Comparo con mis caras conocidas
+        for nombre, known_encoding in self.caras_conocidas.items():
+            match = face_recognition.compare_faces([known_encoding], cara_encoding, tolerance=0.6)[0]
             if match:
                 return nombre
-            
+
         return "Desconocido"
+       
 
 
     def cargar_caras(self):
@@ -106,7 +122,11 @@ class ID_Cara(Node):
             diccionario con nombre e encondings
         """
         #clave:nombre | valor: nombre de archvio
-        caras_conocidas = {"Maria": "Maria.png", "Pedro": "Pedro.png","Pablo":"Pablo.jpeg"}
+        caras_conocidas = {"Pedro": "Pedro.png",
+                           "Pablo":"Pablo.jpg",
+                           "Ariel":"Ariel.jpg",
+                           "Juan":"Juan.jpeg"
+                           }
         diccionario_caras = {}
 
         for nombre, archivo in caras_conocidas.items():

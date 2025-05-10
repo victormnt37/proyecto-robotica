@@ -16,13 +16,26 @@ class ID_Cuerpo(Node):
             Sobre el ROI identifica segun el color de la ropa y si lleva un badge
             si la persona es enfermera o paciente
         """  
+        super().__init__('ID_Cuerpo') 
+
         
-        topic_img_sim='/camera/image_raw'
-        topic_img_irl='/image'
-        super().__init__('ID_Cuerpo')
+         # Declarar el parámetro con valor por defecto
+
+        self.declare_parameter('modo', 'sim')  # puede ser 'sim' o 'irl'
         
+        modo = self.get_parameter('modo').get_parameter_value().string_value
+
+
+        # Elegir el topic en función del parámetro
+        topic_img_sim = '/camera/image_raw'
+        topic_img_irl = '/image'
+        topic_seleccionado = topic_img_sim if modo == 'sim' else topic_img_irl
+
+        self.get_logger().info(f"Usando el topic: {topic_seleccionado}")
+
+
         self.bridge_object = CvBridge()
-        self.image_sub = self.create_subscription(Image,topic_img_sim,self.camera_callback,QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
+        self.image_sub = self.create_subscription(Image,topic_seleccionado,self.camera_callback,QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         
     def camera_callback(self,data):
 

@@ -15,7 +15,7 @@ def generate_launch_description():
             executable='id_cara',
             name='id_cara',
             output='screen',
-            parameters=[{'use_sim_time': True , 'modo':'sim'}]
+            parameters=[{'use_sim_time': False , 'modo':'irl'}]
         ),
 
         Node(
@@ -23,6 +23,6 @@ def generate_launch_description():
             executable='id_cuerpo',
             name='id_cuerpo',
             output='screen',
-            parameters=[{'use_sim_time': True,'modo':'sim'}]
+            parameters=[{'use_sim_time': False,'modo':'irl'}]
         )
     ])
