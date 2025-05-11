@@ -122,16 +122,21 @@ class ID_Cara(Node):
             diccionario con nombre e encondings
         """
         #clave:nombre | valor: nombre de archvio
-        caras_conocidas = {"Pedro": "Pedro.png",
-                           "Pablo":"Pablo.jpg",
-                           "Ariel":"Ariel.jpg",
-                           "Juan":"Juan.jpeg"
-                           }
+
+        caras_conocidas = {
+            "Ozuna": "ozuna.jpg", 
+            "Lamine": "LamineYamal.jpg",
+            "Ariel": "Alejandro.jpeg",
+            "Juan": "Juan.jpeg",
+            "Pau": "Pau.jpeg",
+        }
+        
+
         diccionario_caras = {}
 
         for nombre, archivo in caras_conocidas.items():
             try:
-                imagen = face_recognition.load_image_file(f'src/kyron/kyron_vision/caras_test/{archivo}')
+                imagen = face_recognition.load_image_file(f'src/kyron/kyron_vision/caras/{archivo}')
                 encodings = face_recognition.face_encodings(imagen)
 
                 if encodings:  # Verifica que se haya encontrado al menos una cara

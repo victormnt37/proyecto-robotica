@@ -24,7 +24,7 @@ class ID_Cuerpo(Node):
         self.declare_parameter('modo', 'sim')  # puede ser 'sim' o 'irl'
         
         modo = self.get_parameter('modo').get_parameter_value().string_value
-
+        
 
         # Elegir el topic en función del parámetro
         topic_img_sim = '/camera/image_raw'
