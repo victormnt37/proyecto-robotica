@@ -1,42 +1,123 @@
 import rclpy
 from rclpy.node import Node
-from rclpy.action import ActionClient
-from nav2_msgs.action import NavigateToPose
-from std_msgs.msg import String
+from lifecycle_msgs.msg import State
+from rclpy.lifecycle import TransitionCallbackReturn
+from geometry_msgs.msg import Twist
+from std_srvs.srv import Trigger
+from rclpy.qos import QoSProfile, ReliabilityPolicy
 
-class CancelNavClient(Node):
+class CancelLifeCycleNav(Node):
     def __init__(self):
-        super().__init__('kyron_cancel_nav')
-        self._action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
-        self.state_pub = self.create_publisher(String, '/robot_state', 10)
-
-    def cancel_navigation(self):
-        self.get_logger().info("Esperando conexión con action server...")
-        self._action_client.wait_for_server()
-
-        self.get_logger().info("Solicitando cancelación de la navegación activa...")
-        cancel_future = self._action_client.cancel_all_goals_async()
-        cancel_future.add_done_callback(self.cancel_done)
-
-    def cancel_done(self, future):
-        cancel_response = future.result()
-        if cancel_response.return_code == 0:
-            self.get_logger().info('Cancelación completada exitosamente.')
-        else:
-            self.get_logger().warn(f'Código de retorno de cancelación: {cancel_response.return_code}')
+        super().__init__('emergency_stop_node')
+        self._cmd_vel_publisher = None
+        self._stop_service = None
+        self._current_state = "READY"
         
-        # Publicar estado detenido
-        msg = String()
-        msg.data = 'STOPPED'
-        self.state_pub.publish(msg)
+        # Configuración QoS para comandos de velocidad (best effort)
+        self._qos = QoSProfile(
+            depth=1,
+            reliability=ReliabilityPolicy.BEST_EFFORT
+        )
 
-        rclpy.shutdown()
+    def on_configure(self, state: State) -> TransitionCallbackReturn:
+        """Configura los recursos del nodo"""
+        self.get_logger().info("Configurando nodo de parada...")
+        try:
+            # Publisher para comandos de velocidad (se activará en on_activate)
+            self._cmd_vel_publisher = self.create_lifecycle_publisher(
+                Twist, 
+                '/cmd_vel', 
+                self._qos
+            )
+            
+            # Servicio de parada de emergencia
+            self._stop_service = self.create_service(
+                Trigger,
+                '/emergency_stop',
+                self.handle_stop_request
+            )
+            
+            self._current_state = "CONFIGURED"
+            return TransitionCallbackReturn.SUCCESS
+        except Exception as e:
+            self.get_logger().error(f"Error en configuración: {str(e)}")
+            return TransitionCallbackReturn.FAILURE
+
+    def on_activate(self, state: State) -> TransitionCallbackReturn:
+        """Activa el nodo"""
+        self.get_logger().info("Nodo de parada activado")
+        self._current_state = "ACTIVE"
+        return super().on_activate(state)
+
+    def on_deactivate(self, state: State) -> TransitionCallbackReturn:
+        """Desactiva el nodo"""
+        self.get_logger().info("Nodo de parada desactivado")
+        self._current_state = "INACTIVE"
+        return super().on_deactivate(state)
+
+    def on_cleanup(self, state: State) -> TransitionCallbackReturn:
+        """Limpia los recursos"""
+        self.get_logger().info("Limpiando recursos de parada...")
+        self._cmd_vel_publisher = None
+        self._stop_service = None
+        self._current_state = "READY"
+        return TransitionCallbackReturn.SUCCESS
+
+    def on_shutdown(self, state: State) -> TransitionCallbackReturn:
+        """Apagado del nodo"""
+        self.get_logger().info("Apagando nodo de parada...")
+        self._cmd_vel_publisher = None
+        self._stop_service = None
+        return TransitionCallbackReturn.SUCCESS
+
+    def handle_stop_request(self, request, response):
+        """Maneja las solicitudes de parada de emergencia"""
+        if self._current_state != "ACTIVE":
+            response.success = False
+            response.message = "El nodo no está activo"
+            return response
+        
+        try:
+            # Publicar comando de parada (velocidad cero)
+            stop_msg = Twist()
+            self._cmd_vel_publisher.publish(stop_msg)
+            
+            response.success = True
+            response.message = "Robot detenido correctamente"
+            self.get_logger().warn("¡PARADA DE EMERGENCIA ACTIVADA!")
+        except Exception as e:
+            response.success = False
+            response.message = f"Error al detener el robot: {str(e)}"
+        
+        return response
 
 def main(args=None):
     rclpy.init(args=args)
-    node = CancelNavClient()
-    node.cancel_navigation()
-    rclpy.spin(node)
+    
+    # Crear y ejecutar el nodo
+    executor = rclpy.executors.SingleThreadedExecutor()
+    lifecycle_node = CancelLifeCycleNav()
+    
+    try:
+        # Configurar el nodo
+        if not lifecycle_node.configure().success:
+            raise RuntimeError("Fallo en configuración del nodo de parada")
+        
+        # Activar el nodo
+        if not lifecycle_node.activate().success:
+            raise RuntimeError("Fallo en activación del nodo de parada")
+        
+        # Mantener el nodo activo
+        executor.add_node(lifecycle_node)
+        executor.spin()
+        
+    except Exception as e:
+        lifecycle_node.get_logger().error(f"Error: {str(e)}")
+    finally:
+        # Limpieza ordenada
+        executor.shutdown()
+        lifecycle_node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
