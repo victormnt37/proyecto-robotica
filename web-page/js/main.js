@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', event => {
-    console.log("entro en la pagina")
+    let wsControl = new WebSocket("ws://localhost:8765");
 
     document.getElementById("btn_con").addEventListener("click", connect)
     document.getElementById("btn_dis").addEventListener("click", disconnect)
@@ -9,6 +9,12 @@ document.addEventListener('DOMContentLoaded', event => {
     document.getElementById("btn_stop").addEventListener("click", stop)
     document.getElementById("btn_right").addEventListener("click", derecha)
     document.getElementById("btn_left").addEventListener("click", izquierda)
+
+    // boton patrullar
+    document.getElementById("btn_waypoints").addEventListener("click", () => {
+        console.log('Comienza la patrulla');
+        wsControl.send(JSON.stringify({ command: "waypoint_routine" }));
+    });
 
     // botones de dirección a salas
     const salas = [
@@ -172,35 +178,13 @@ document.addEventListener('DOMContentLoaded', event => {
     }
 
     function sendGoal(x, y, w) {
-        console.log("QUE VOY");
-        
-        const topic = new ROSLIB.Topic({
-            ros: data.ros,
-            name: '/goal_pose',
-            messageType: 'geometry_msgs/msg/PoseStamped'
-        });
-    
-        const message = new ROSLIB.Message({
-            header: {
-                frame_id: 'map',
-                stamp: { sec: 0, nanosec: 0 }
-            },
-            pose: {
-                position: {
-                    x: x,
-                    y: y,
-                    z: 0
-                },
-                orientation: {
-                    x: 0,
-                    y: 0,
-                    z: 0,
-                    w: w
-                }
-            }
-        });
-    
-        topic.publish(message);
+        const msg = {
+            command: "go_to_goal",
+            x: x,
+            y: y,
+            w: w
+        };
+        wsControl.send(JSON.stringify(msg));
     }
     
 });

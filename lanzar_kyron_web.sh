@@ -39,3 +39,10 @@ gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 python3 -m http.server 8000
 exec bash"
+
+# Terminal 6 - Servidor websocket
+gnome-terminal -- bash -c "
+source install/setup.bash
+cd ~/proyecto-robotica/web-page/server
+python3 websocket_server.py
+exec bash"

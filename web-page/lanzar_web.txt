@@ -51,3 +51,8 @@ ros2 run web_video_server web_video_server
 
 ### Terminal 5
 python3 -m http.server 8000
+
+### Terminal 6
+source install/setup.bash
+cd ~/proyecto-robotica/web-page/server
+python3 websocket_server.py
