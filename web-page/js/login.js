@@ -7,7 +7,10 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
   
     if (email === "usuario@gmail.com" && password === "123456") {
       window.location.href = "../html/panel_de_control.html";
-    } else {
+    } 
+    else if (email === "medico@gmail.com" && password === "123456"){
+      window.location.href = "../html/panel_medico.html";
+    }else {
       errorMsg.textContent = "Correo o contraseña incorrectos.";
       errorMsg.style.display = "block";
     }
