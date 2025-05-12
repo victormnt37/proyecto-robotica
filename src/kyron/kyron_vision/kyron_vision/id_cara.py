@@ -8,6 +8,8 @@ from sensor_msgs.msg import Image
 from rclpy.node import Node
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 
+from kyron_interface.msg import PersonaIdentificada
+
 
 class ID_Cara(Node):  
    
@@ -20,12 +22,12 @@ class ID_Cara(Node):
         """ 
         super().__init__('ID_Cara')
 
-        # Declarar el parámetro con valor por defecto
-
+        #=======================
+        #Carga de caras y topics
+        #=======================
         self.declare_parameter('modo', 'sim')  # puede ser 'sim' o 'irl'
         
         modo = self.get_parameter('modo').get_parameter_value().string_value
-
 
         # Elegir el topic en función del parámetro
         topic_img_sim = '/camera/image_raw'
@@ -36,9 +38,17 @@ class ID_Cara(Node):
         
         self.caras_conocidas=self.cargar_caras()
         
+        #=======================
+        #Suscriber a imagen
+        #=======================
         self.bridge_object = CvBridge()
         self.image_sub = self.create_subscription(Image,topic_seleccionado,self.camera_callback,QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         
+        #=======================
+        #Publisher
+        #=======================
+        self.publisher_id_cara= self.create_publisher(PersonaIdentificada,"/vision/id_cara",10)
+
     def camera_callback(self,data):
 
         """camera_calback
@@ -69,11 +79,13 @@ class ID_Cara(Node):
 
                 nombre = self.reconocer_caras(roi)
 
-                print(f'Nombre detectado: {nombre}')  # Verifica que no sea vacío
+                #print(f'Nombre detectado: {nombre}')  # Verifica que no sea vacío
+                self.publicar_persona_identificada(nombre)
 
                 # Dibujar rectángulo y texto
                 cv2.rectangle(cv_image, (x, y), (x+w, y+h), (35, 101, 51), 2)
                 cv2.putText(cv_image, nombre, (x, max(y - 10, 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
+
 
 
         except CvBridgeError as e:
@@ -100,7 +112,7 @@ class ID_Cara(Node):
         if not locations:
             return "Sin rostro detectado"
 
-        # 2) Ahora sí, codifico usando esas ubicaciones
+        # 2) Ahora codifico usando esas ubicaciones(aqui es donde ya se hace lo de face recog)
         encodings = face_recognition.face_encodings(rgb, locations)
         cara_encoding = encodings[0]
 
@@ -113,25 +125,45 @@ class ID_Cara(Node):
         return "Desconocido"
        
 
+    def publicar_persona_identificada(self, nombre):  
+        """publica el mensaje con la persona detectada
+
+        Args:
+            nombre (string): nombre de la persona detectada
+        
+        """
+        msg = PersonaIdentificada()
+        msg.nombre_persona = nombre
+
+        self.publisher_id_cara.publish(msg)
+        self.get_logger().info(f'Persona Identificada {nombre}')
+        
 
     def cargar_caras(self):
         """
         Carga las caras conocidas y devuelve un diccionario: {nombre: encoding}
 
         Return:
-            diccionario con nombre e encondings
+            diccionario_caras (diccionario) con nombre e encondings
         """
         #clave:nombre | valor: nombre de archvio
-        caras_conocidas = {"Pedro": "Pedro.png",
-                           "Pablo":"Pablo.jpg",
-                           "Ariel":"Ariel.jpg",
-                           "Juan":"Juan.jpeg"
-                           }
+
+        caras_conocidas = {
+            "Ozuna": "ozuna.jpg", 
+            "Lamine": "LamineYamal.jpg",
+            "Ariel": "Ariel.jpeg",
+            "Juan": "Juan.jpeg",
+            "Pau": "Pau.jpeg",
+            "Victor": "Victor.jpeg",
+            "Denys": "Denys.jpeg"
+        }
+        
+
         diccionario_caras = {}
 
         for nombre, archivo in caras_conocidas.items():
             try:
-                imagen = face_recognition.load_image_file(f'src/kyron/kyron_vision/caras_test/{archivo}')
+                imagen = face_recognition.load_image_file(f'src/kyron/kyron_vision/caras/{archivo}')
                 encodings = face_recognition.face_encodings(imagen)
 
                 if encodings:  # Verifica que se haya encontrado al menos una cara
@@ -142,6 +174,7 @@ class ID_Cara(Node):
                 print(f"[ERROR] No se pudo cargar {archivo}: {e}")
 
         return diccionario_caras
+        
 
 
 def main(args=None):
