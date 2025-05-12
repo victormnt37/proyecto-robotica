@@ -39,5 +39,6 @@ endif()
 # Añadir la siguiente funcion
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ConteoPersonas.msg"
+  "msg/PersonaIdentificada.msg"
 )
 ament_package()
