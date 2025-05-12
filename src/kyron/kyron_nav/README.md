@@ -10,7 +10,7 @@ Paquete que se encarga de la navegacion del robot.
 ** Lanza todo lo necesario para simular (gazebo,rviz,y nodos de nav2)**
 cd proyecto-robotica/
 source install/setup.bash
-ros2 launch kyron_nav kyron_nav_sim.launch.py 
+ros2 launch kyron_nav kyron_nav_v2.launch.py 
 
 
 ### Terminal 2
