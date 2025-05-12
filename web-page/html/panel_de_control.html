@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control - Kyron</title>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/panel_de_control.css">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
-    <script src="../js/main.js" defer></script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/roslib/build/roslib.min.js"></script>
 
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/panel_de_control.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+    <script src="../js/main.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/easeljs@1/lib/easeljs.min.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/eventemitter2@6.4.9/lib/eventemitter2.min.js "></script>
     <script src="https://cdn.jsdelivr.net/npm/ros2d@0.10.0/build/ros2d.min.js"></script>
@@ -165,25 +165,25 @@
                     <button id="toggle-salas-dropdown" class="boton-verde small">Dirección a salas</button>
                 </div>
             
-                <!-- DESPLEGABLE -->
-                <div id="salas-dropdown" class="salas-dropdown hidden">
-                    <div class="salas-scroll">
-                        <button class="boton-sala" id="sala-entrada">Entrada</button>
-                        <button class="boton-sala" id="sala-recepcion">Recepción</button>
-                        <button class="boton-sala" id="sala-5">Sala 5</button>
-                        <button class="boton-sala" id="sala-6">Sala 6</button>
-                        <button class="boton-sala" id="sala-7">Sala 7</button>
-                        <button class="boton-sala" id="sala-8">Sala 8</button>
-                        <button class="boton-sala" id="sala-11">Sala 11</button>
-                        <button class="boton-sala" id="sala-12">Sala 12</button>
-                        <button class="boton-sala" id="sala-16">Sala 16</button>
-                        <button class="boton-sala" id="sala-1">Sala 1</button>
-                    </div>
-                </div>
-            
                 <div class="camera-preview">
                     <div id="divCamera">
                         <img id="cameraFeed" src="http://localhost:8080/stream?topic=/turtlebot3/camera/image_raw">
+                    </div>
+
+                     <!-- DESPLEGABLE -->
+                    <div id="salas-dropdown" class="salas-dropdown hidden">
+                        <div class="salas-scroll">
+                            <button class="boton-sala" id="sala-entrada">Entrada</button>
+                            <button class="boton-sala" id="sala-recepcion">Recepción</button>
+                            <button class="boton-sala" id="sala-5">Sala 5</button>
+                            <button class="boton-sala" id="sala-6">Sala 6</button>
+                            <button class="boton-sala" id="sala-7">Sala 7</button>
+                            <button class="boton-sala" id="sala-8">Sala 8</button>
+                            <button class="boton-sala" id="sala-11">Sala 11</button>
+                            <button class="boton-sala" id="sala-12">Sala 12</button>
+                            <button class="boton-sala" id="sala-16">Sala 16</button>
+                            <button class="boton-sala" id="sala-1">Sala 1</button>
+                        </div>
                     </div>
                 </div>
             
@@ -229,6 +229,7 @@
             const dropdown = document.getElementById("salas-dropdown");
             dropdown.classList.toggle("hidden");
         });
+        
     </script>    
     
     <script>
@@ -240,6 +241,7 @@
         // También cerrar al presionar botón flotante
         document.getElementById("toggle-chat").addEventListener("click", toggleChat);
     </script>
+    <script src="control_salas.js"></script>
     
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9324b24bfa4ebcc2',t:'MTc0NDk4NDkxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>

@@ -1,0 +1,195 @@
+/* medico.css */
+.main-content {
+    padding: 2rem 0;
+}
+
+.search-container {
+    max-width: 800px;
+    margin: 0 auto 2rem;
+    padding: 0 1.5rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid var(--accent-teal);
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.3);
+}
+
+.patients-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.patients-table th,
+.patients-table td {
+    padding: 1.2rem;
+    text-align: left;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.patients-table th {
+    background: var(--primary-green);
+    color: var(--white);
+    font-weight: 700;
+}
+
+.patients-table tr:last-child td {
+    border-bottom: none;
+}
+
+.patients-table tr:hover {
+    background-color: rgba(64, 145, 108, 0.05);
+}
+
+.conversation-link {
+    color: var(--accent-teal);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.conversation-link:hover {
+    color: var(--primary-green);
+}
+
+/* Modal de conversación */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.conversacion-popup {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--primary-green);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--accent-teal);
+    transition: transform 0.2s;
+}
+
+.close-btn:hover {
+    transform: scale(1.1);
+}
+
+.conversacion-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: var(--light-gray);
+    border-radius: 8px;
+}
+
+/* Reutilizar estilos del chat existente */
+.message {
+    max-width: 80%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    position: relative;
+}
+
+.message.received {
+    background: white;
+    margin-right: auto;
+}
+
+.message.sent {
+    background: var(--accent-teal);
+    color: white;
+    margin-left: auto;
+}
+
+.message span {
+    display: block;
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Ajustes específicos para paciente */
+.patients-table th:nth-child(1),
+.patients-table td:nth-child(1) {
+    width: 35%;
+}
+
+/* Mobile-first adjustments */
+@media (max-width: 768px) {
+    .patients-table th, 
+    .patients-table td {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .search-input {
+        font-size: 0.9rem;
+    }
+}
+
+.back-arrow {
+    position: fixed;
+    top: 6rem;
+    left: 1.5rem;
+    font-size: 1.8rem;
+    text-decoration: none;
+    color: var(--primary-green);
+    font-weight: bold;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.8);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.back-arrow:hover {
+    color: var(--white);
+    background: var(--accent-teal);
+    transform: scale(1.1);
+}

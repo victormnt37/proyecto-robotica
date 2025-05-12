@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área del Paciente - Kyron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/medico.css"> 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Header No Autenticado -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">
+                <img src="../assets/logo.png" alt="Kyron Robotics" class="logo-img">
+                <span class="logo-text">Kyron</span>
+            </a>
+            <nav class="auth-buttons">
+                <button class="btn-header" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+            </nav>
+        </div>
+    </header>
+
+    <a href="../index.html" class="back-arrow" title="Volver">
+        <span class="material-icons">arrow_back</span>
+    </a>
+
+    <main class="container main-content">
+        <div class="search-container">
+            <input type="text" 
+                   class="search-input" 
+                   placeholder="Introduzca su DNI/SIP">
+        </div>
+
+        <table class="patients-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Conversación</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Ejemplo de datos -->
+                <tr>
+                    <td>2024-03-15 09:30</td>
+                    <td>
+                        <a href="#conversacion/1" class="conversation-link" data-conversation-id="1">
+                            Ver conversación
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2024-02-28 11:15</td>
+                    <td>
+                        <a href="#conversacion/2" class="conversation-link" data-conversation-id="2">
+                            Ver conversación
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <p class="copyright">&copy; 2025 Kyron Registration - Sistema de Gestión Hospitalaria</p>
+            <div class="footer-info">
+                <span>Contacto: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4e3d213e213c3a2b0e25373c2120262b2f223a26602d2123">[email&#160;protected]</a></span>
+                <nav class="social-links">
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">Twitter</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <div id="conversacion-modal" class="modal-overlay hidden">
+        <div class="conversacion-popup card">
+            <div class="modal-header">
+                <h3>Conversación con <span id="patient-name"></span></h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="conversacion-content">
+                <!-- Mensajes simulados -->
+                <div class="message received">
+                    <p>¿Debo tomar la medicación antes o después de comer?</p>
+                    <span>15/03 09:32</span>
+                </div>
+                <div class="message sent">
+                    <p>Debe tomarla 30 minutos antes del desayuno.</p>
+                    <span>15/03 09:35</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Control del modal
+        document.querySelectorAll('.conversation-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const paciente = e.target.closest('tr').querySelector('td:nth-child(2)').textContent;
+                document.getElementById('patient-name').textContent = paciente;
+                document.getElementById('conversacion-modal').classList.remove('hidden');
+            });
+        });
+
+        document.querySelector('.close-btn').addEventListener('click', () => {
+            document.getElementById('conversacion-modal').classList.add('hidden');
+        });
+
+        document.querySelector('.modal-overlay').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                document.getElementById('conversacion-modal').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

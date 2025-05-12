@@ -31,8 +31,9 @@ main {
 
 
 .container {
-    width: 90%;
-    padding: 0 2rem;
+    width: 100%;
+    max-width: 1600px; /* Ancho máximo consistente */
+    padding: 0 1.5rem;
     margin: 0 auto;
 }
 
@@ -51,6 +52,17 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Espacio uniforme entre botones */
+}
+
+.btn-header {
+    /* Mantener estilos existentes */
+    white-space: nowrap; /* Evitar saltos de línea */
 }
 
 .logo {
