@@ -112,7 +112,7 @@ class ID_Cara(Node):
         if not locations:
             return "Sin rostro detectado"
 
-        # 2) Ahora sí, codifico usando esas ubicaciones
+        # 2) Ahora codifico usando esas ubicaciones(aqui es donde ya se hace lo de face recog)
         encodings = face_recognition.face_encodings(rgb, locations)
         cara_encoding = encodings[0]
 
@@ -144,7 +144,7 @@ class ID_Cara(Node):
         Carga las caras conocidas y devuelve un diccionario: {nombre: encoding}
 
         Return:
-            diccionario con nombre e encondings
+            diccionario_caras (diccionario) con nombre e encondings
         """
         #clave:nombre | valor: nombre de archvio
 

@@ -14,7 +14,9 @@ class ID_Cuerpo(Node):
         """ID_Cuerpo
             Identifica cuerpos y aplica un ROI sobre este. 
             Sobre el ROI identifica segun el color de la ropa y si lleva un badge
-            si la persona es enfermera o paciente
+            si la persona es enfermera o paciente.
+
+            Este luego los cuenta  y manda el conteo a un topic
         """  
         super().__init__('ID_Cuerpo') 
 
@@ -56,6 +58,15 @@ class ID_Cuerpo(Node):
             bodies = fullbody.detectMultiScale(img_gray, 1.1, 5)
 
 
+            #Inicializamos nuestras variables    
+            conteo_frame_actual= {
+                "Internad@": 0,
+                "Dr/Dra": 0,
+                "Enfermer@": 0,
+                "Cirujan@": 0,
+                "Paciente":0,
+            }
+
             # Para cada cuerpo detectado, dibujamos un rectángulo
             for (x,y,w,h) in bodies:
                 cv2.rectangle(cv_image,(x,y),(x+w,y+h),(255,0,0),2)
@@ -63,8 +74,12 @@ class ID_Cuerpo(Node):
                 persona_detectada=self.id_por_uniforme(roi)
 
                 cv2.putText(roi, f"{persona_detectada}", (5, 15), cv2.FONT_HERSHEY_PLAIN, 0.8, (0,255,0), 1)
+                
 
-                self.actualizar_y_publicar_conteo(persona_detectada)
+                if persona_detectada in conteo_frame_actual:
+                    conteo_frame_actual[persona_detectada]+= 1
+
+                self.publicar_conteo(conteo_frame_actual)
 
 
         except CvBridgeError as e:
@@ -113,38 +128,24 @@ class ID_Cuerpo(Node):
         #Si no encuentra ningun color
         return "Paciente"
 
-    def actualizar_y_publicar_conteo(self,persona_detectada):
+    def publicar_conteo(self,conteo):
+        """publica el conteo actual de cada cuerpo detectado 
+        (hay 5 doctores, hay 5 pacientes,etc)
 
-        #Inicializamos nuestras variables    
-        conteo_frame_actual= {
-            "Internad@": 0,
-            "Dr/Dra": 0,
-            "Enfermer@": 0,
-            "Cirujan@": 0,
-            "Paciente":0,
-        }
-
-        if persona_detectada in conteo_frame_actual:
-            conteo_frame_actual[persona_detectada]+=1
-        
-        if persona_detectada not in conteo_frame_actual and conteo_frame_actual[persona_detectada]>0:
-            conteo_frame_actual[persona_detectada]-=1
-
+        Args:
+            conteo (dictionary{string:int}): diccionario con el tipo de persona y cuantas veces aparece.
+        """
         #Creamos nuestro mensaje
         msg = ConteoPersonas()
-        msg.doctores= conteo_frame_actual['Dr/Dra']
-        msg.pacientes= conteo_frame_actual['Paciente']
-        msg.internados=conteo_frame_actual['Internad@']
-        msg.enfermeros=conteo_frame_actual['Enfermer@']
-        msg.cirujanos=conteo_frame_actual['Cirujan@']
-
+        msg.doctores= conteo['Dr/Dra']
+        msg.pacientes= conteo['Paciente']
+        msg.internados=conteo['Internad@']
+        msg.enfermeros=conteo['Enfermer@']
+        msg.cirujanos=conteo['Cirujan@']
 
         self.publisher_id_cuerpo.publish(msg)
-        self.get_logger().info(f'Num_doctores: {msg.doctores}')
-        self.get_logger().info(f'Num_pacientes: {msg.pacientes}')
-        self.get_logger().info(f'Num_internados: {msg.internados}')
-        self.get_logger().info(f'Num_enfermeros: {msg.enfermeros}')
-        self.get_logger().info(f'Num_cirujanos: {msg.cirujanos}')
+
+        self.get_logger().info(f'Num_doctores: {msg.doctores} | Num_pacientes: {msg.pacientes} | Num_internados: {msg.internados} | Num_enfermeros: {msg.enfermeros} | Num_cirujanos: {msg.cirujanos}')
 
 
     def includes_x_color(self, img,rango_colores):
@@ -152,9 +153,9 @@ class ID_Cuerpo(Node):
         Devuelve true si hay suficientes pixeles en la imagen con el color que se busca
         
         Args:
-        img= imagen que queremos evaluar
+        img(img)= imagen que queremos evaluar
 
-        rango_colores= rango de colores para que pueda encontrarlos.
+        rango_colores(tuple[float],[float])= rango de colores para que pueda encontrarlos.
 
         Returns:
         T/F
