@@ -27,6 +27,7 @@ setup(
             'id_color=kyron_vision.id_color:main',
             'id_cara=kyron_vision.id_cara:main',
             'listener=kyron_vision.listener:main'
+            'listener_cuerpo=kyron_vision.listener_cuerpo:main'
 
         ],
     },

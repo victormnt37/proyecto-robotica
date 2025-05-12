@@ -6,9 +6,9 @@ from sensor_msgs.msg import Image
 from rclpy.node import Node
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 
+from kyron_interface.msg import ConteoPersonas
  
 class ID_Cuerpo(Node):
-    
 
     def __init__(self):
         """ID_Cuerpo
@@ -18,7 +18,6 @@ class ID_Cuerpo(Node):
         """  
         super().__init__('ID_Cuerpo') 
 
-        
          # Declarar el parámetro con valor por defecto
 
         self.declare_parameter('modo', 'sim')  # puede ser 'sim' o 'irl'
@@ -37,6 +36,10 @@ class ID_Cuerpo(Node):
         self.bridge_object = CvBridge()
         self.image_sub = self.create_subscription(Image,topic_seleccionado,self.camera_callback,QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         
+        self.publisher_id_cuerpo= self.create_publisher(ConteoPersonas,"/vision/id_cuerpo",10)
+
+
+
     def camera_callback(self,data):
 
         try:
@@ -57,9 +60,12 @@ class ID_Cuerpo(Node):
             for (x,y,w,h) in bodies:
                 cv2.rectangle(cv_image,(x,y),(x+w,y+h),(255,0,0),2)
                 roi = cv_image[y:y+h, x:x+w]
+                persona_detectada=self.id_por_uniforme(roi)
 
-                cv2.putText(roi, f"{self.id_por_uniforme(roi)}", (5, 15), cv2.FONT_HERSHEY_PLAIN, 0.8, (0,255,0), 1)
-   
+                cv2.putText(roi, f"{persona_detectada}", (5, 15), cv2.FONT_HERSHEY_PLAIN, 0.8, (0,255,0), 1)
+
+                self.actualizar_y_publicar_conteo(persona_detectada)
+
 
         except CvBridgeError as e:
             print(e)
@@ -70,6 +76,7 @@ class ID_Cuerpo(Node):
 
 
     def id_por_uniforme(self,img):
+
         """identifica si una persona es doctora o enfermera basado en su uniforme
 
         Args:
@@ -105,7 +112,40 @@ class ID_Cuerpo(Node):
         
         #Si no encuentra ningun color
         return "Paciente"
+
+    def actualizar_y_publicar_conteo(self,persona_detectada):
+
+        #Inicializamos nuestras variables    
+        conteo_frame_actual= {
+            "Internad@": 0,
+            "Dr/Dra": 0,
+            "Enfermer@": 0,
+            "Cirujan@": 0,
+            "Paciente":0,
+        }
+
+        if persona_detectada in conteo_frame_actual:
+            conteo_frame_actual[persona_detectada]+=1
         
+        if persona_detectada not in conteo_frame_actual and conteo_frame_actual[persona_detectada]>0:
+            conteo_frame_actual[persona_detectada]-=1
+
+        #Creamos nuestro mensaje
+        msg = ConteoPersonas()
+        msg.doctores= conteo_frame_actual['Dr/Dra']
+        msg.pacientes= conteo_frame_actual['Paciente']
+        msg.internados=conteo_frame_actual['Internad@']
+        msg.enfermeros=conteo_frame_actual['Enfermer@']
+        msg.cirujanos=conteo_frame_actual['Cirujan@']
+
+
+        self.publisher_id_cuerpo.publish(msg)
+        self.get_logger().info(f'Num_doctores: {msg.doctores}')
+        self.get_logger().info(f'Num_pacientes: {msg.pacientes}')
+        self.get_logger().info(f'Num_internados: {msg.internados}')
+        self.get_logger().info(f'Num_enfermeros: {msg.enfermeros}')
+        self.get_logger().info(f'Num_cirujanos: {msg.cirujanos}')
+
 
     def includes_x_color(self, img,rango_colores):
         """
