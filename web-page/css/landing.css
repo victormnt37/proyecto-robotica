@@ -31,7 +31,7 @@
 .hero-title {
     font-size: 2.8rem;
     position: relative;
-    top: -100px; /* o lo que necesites */
+    margin-top: -3rem; /* o lo que necesites */
     line-height: 1.2;
     text-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
@@ -96,6 +96,11 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     transition: transform 0.3s;
 }
+
+.about-card p {
+    margin-top: 2rem;
+}
+
 
 .about-card:hover {
     transform: translateY(-5px);

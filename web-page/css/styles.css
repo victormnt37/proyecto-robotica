@@ -31,8 +31,9 @@ main {
 
 
 .container {
-    width: 90%;
-    padding: 0 2rem;
+    width: 100%;
+    max-width: 1600px; /* Ancho máximo consistente */
+    padding: 0 1.5rem;
     margin: 0 auto;
 }
 
