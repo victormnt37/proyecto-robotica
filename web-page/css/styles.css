@@ -54,6 +54,17 @@ main {
     align-items: center;
 }
 
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Espacio uniforme entre botones */
+}
+
+.btn-header {
+    /* Mantener estilos existentes */
+    white-space: nowrap; /* Evitar saltos de línea */
+}
+
 .logo {
     display: flex;
     align-items: center;
