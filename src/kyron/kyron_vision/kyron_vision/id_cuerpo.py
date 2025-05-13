@@ -43,6 +43,11 @@ class ID_Cuerpo(Node):
 
 
     def camera_callback(self,data):
+        """camera_calback
+
+        Esta funcion aplica la lo queremos hacer con la imagen capturada por el robot, en este caso, identificar caras.
+
+        """
 
         try:
             # Seleccionamos bgr8 porque es la codificacion de OpenCV por defecto
