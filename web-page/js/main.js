@@ -93,6 +93,22 @@ document.addEventListener('DOMContentLoaded', event => {
                 document.getElementById("pos_y").innerHTML = data.position.y.toFixed(2)
         })
 
+        // Suscripción al nuevo topic con tipo personalizado
+        const conteoPersonasTopic = new ROSLIB.Topic({
+            ros: data.ros,
+            name: '/vision/id_cuerpo',
+            messageType: 'kyron_interface/msg/ConteoPersonas'
+        });
+
+        conteoPersonasTopic.subscribe((message) => {
+            // Actualizar el DOM con los datos del mensaje
+            document.getElementById("num-pacientes").textContent = message.pacientes;
+            document.getElementById("num-doctores").textContent = message.doctores;
+            document.getElementById("num-cirujanos").textContent = message.cirujanos;
+            document.getElementById("num-internados").textContent = message.internados;
+            document.getElementById("num-enfermeros").textContent = message.enfermeros;
+        });
+
         updateCameraFeed()
     }
 
