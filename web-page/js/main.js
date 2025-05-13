@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', event => {
     data = {
         // ros connection
         ros: null,
-        rosbridge_address: 'ws://127.0.0.1:9090/', // no se usa
+        rosbridge_address: 'ws://127.0.0.1:9090/', // CAMBIAR ESTA IP PARA EL ROBOT REAL (R11:192.168.0.136)
         connected: false,
         // service information 
         service_busy: false, 
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', event => {
         console.log("setting the camera")
         const img = document.getElementById("cameraFeed");
         const timestamp = new Date().getTime(); // Evita caché agregando un timestamp
-        img.src = `http://0.0.0.0:8080/stream?topic=/camera/image_raw`;
+        img.src = `http://0.0.0.0:8080/stream?topic=/camera/image_raw`;//cambiar el topic por /image/
         //img.src = `http://localhost:8080/stream?topic=/turtlebot3/camera/image_raw&console.log("Cactualizando: http://0.0.0.0:8080/stream?topic=/camera/image_raw)"`
     }
 

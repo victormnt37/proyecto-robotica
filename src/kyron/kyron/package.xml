@@ -16,6 +16,8 @@
   <exec_depend>ubicacion_robot_en_vivo</exec_depend>
   <exec_depend>async_web_server_cpp</exec_depend>
   <exec_depend>web_video_server</exec_depend>
+  <exec_depend>kyron_vision</exec_depend>
+
 
 
   <test_depend>ament_lint_auto</test_depend>
