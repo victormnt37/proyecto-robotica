@@ -6,40 +6,38 @@
     <title>Panel Médico - Kyron</title>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/medico.css"> <!-- Nuevo archivo CSS -->
+    <link rel="stylesheet" href="../css/medico.css">
 </head>
 <body>
     <!-- Header Autenticado -->
     <header class="header">
         <div class="container header-content">
-            <a href="/" class="logo">
-                <img src="../assets/logo.png" alt="Kyron Robotics" class="logo-img">
-                <span class="logo-text">Kyron</span>
-            </a>
-            <div class="user-panel">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                        </svg>
-                    </div>
-                    <span class="user-name">Juanba Peris</span>
-                </div>
-                <button class="btn btn-header" onclick="window.location.href='../index.html'">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-                    </svg>
-                    Cerrar Sesión
-                </button>
+          <a href="/" class="logo">
+            <img src="../assets/logo.png" alt="Kyron Robotics" class="logo-img">
+            <span class="logo-text">Kyron</span>
+          </a>
+          <div class="user-panel">
+            <div class="user-info">
+              <div class="user-avatar">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+              </div>
+              <span id="usuario-nombre" class="user-name">Cargando...</span>
             </div>
+            <button class="btn btn-header" onclick="cerrarSesion()">
+              <svg viewBox="0 0 24 24">
+                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+              </svg>
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
     </header>
 
     <main class="container main-content">
         <div class="search-container">
-            <input type="text" 
-                   class="search-input" 
-                   placeholder="Buscar por DNI/SIP del paciente...">
+            <input type="text" class="search-input" id="search-input" placeholder="Buscar por DNI/SIP del paciente...">
         </div>
 
         <table class="patients-table">
@@ -51,60 +49,13 @@
                     <th>Conversación</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Ejemplo de registro 1 - Formato compatible con SQL -->
-                <tr>
-                    <td>12345678Z</td>
-                    <td>María González Pérez</td>
-                    <td>2024-03-15 09:30:00</td>
-                    <td>
-                        <a href="#conversacion/1" class="conversation-link" data-conversation-id="1">
-                            Ver conversación
-                        </a>
-                    </td>
-                </tr>
-                
-                <!-- Ejemplo de registro 2 - Campos listos para binding -->
-                <tr>
-                    <td>87654321Y</td>
-                    <td>Juan Martínez López</td>
-                    <td>2024-03-14 14:15:00</td>
-                    <td>
-                        <a href="#conversacion/2" class="conversation-link" data-conversation-id="2">
-                            Ver conversación
-                        </a>
-                    </td>
-                </tr>
-
-                <!-- Ejemplo de registro 3 - Estructura típica de DB -->
-                <tr>
-                    <td>11222333R</td>
-                    <td>Ana Rodríguez Sánchez</td>
-                    <td>2024-03-13 11:45:00</td>
-                    <td>
-                        <a href="#conversacion/3" class="conversation-link" data-conversation-id="3">
-                            Ver conversación
-                        </a>
-                    </td>
-                </tr>
+            <tbody id="tabla-conversaciones">
+                <!-- Los datos se llenarán dinámicamente con JavaScript -->
             </tbody>
         </table>
     </main>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container footer-content">
-            <p class="copyright">&copy; 2025 Kyron Registration - Sistema de Gestión Hospitalaria</p>
-            <div class="footer-info">
-                <span>Contacto: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4e3d213e213c3a2b0e25373c2120262b2f223a26602d2123">[email&#160;protected]</a></span>
-                <nav class="social-links">
-                    <a href="#" class="social-link">LinkedIn</a>
-                    <a href="#" class="social-link">Twitter</a>
-                </nav>
-            </div>
-        </div>
-    </footer>
-
+    <!-- Modal para mostrar la conversación -->
     <div id="conversacion-modal" class="modal-overlay hidden">
         <div class="conversacion-popup card">
             <div class="modal-header">
@@ -112,39 +63,147 @@
                 <button class="close-btn">&times;</button>
             </div>
             <div class="conversacion-content">
-                <!-- Mensajes simulados -->
-                <div class="message received">
-                    <p>¿Debo tomar la medicación antes o después de comer?</p>
-                    <span>15/03 09:32</span>
-                </div>
-                <div class="message sent">
-                    <p>Debe tomarla 30 minutos antes del desayuno.</p>
-                    <span>15/03 09:35</span>
-                </div>
+                <!-- Los mensajes de la conversación se cargarán aquí dinámicamente -->
             </div>
         </div>
     </div>
 
     <script>
-        // Control del modal
-        document.querySelectorAll('.conversation-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const paciente = e.target.closest('tr').querySelector('td:nth-child(2)').textContent;
-                document.getElementById('patient-name').textContent = paciente;
-                document.getElementById('conversacion-modal').classList.remove('hidden');
-            });
-        });
+        // Función para cargar todas las conversaciones del médico
+        async function cargarConversaciones(dni = "") {
+            let url = "http://127.0.0.1:5000/api/conversaciones_medico";  // Este es para obtener todas las conversaciones del médico
 
-        document.querySelector('.close-btn').addEventListener('click', () => {
-            document.getElementById('conversacion-modal').classList.add('hidden');
-        });
-
-        document.querySelector('.modal-overlay').addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-overlay')) {
-                document.getElementById('conversacion-modal').classList.add('hidden');
+            if (dni) {
+                // Si se pasa un DNI, se utiliza la ruta para obtener conversaciones específicas por DNI
+                const correo = localStorage.getItem("correo");
+                if (correo) {
+                    url = `http://127.0.0.1:5000/api/obtener_conversaciones_por_dni2?dni=${dni}&correo=${correo}`;
+                } else {
+                    console.error("Correo no encontrado en el almacenamiento local.");
+                    return;
+                }
+            } else {
+                // Si no se pasa un DNI, obtenemos todas las conversaciones del médico autenticado
+                const correo = localStorage.getItem("correo");
+                if (correo) {
+                    url = `http://127.0.0.1:5000/api/conversaciones_medico?correo=${correo}`;
+                } else {
+                    console.error("Correo no encontrado en el almacenamiento local.");
+                    return;
+                }
             }
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud: ' + response.statusText);
+                }
+                const data = await response.json();
+
+                const tbody = document.getElementById("tabla-conversaciones");
+                tbody.innerHTML = "";
+
+                if (Array.isArray(data)) {
+                    data.forEach(conv => {
+                        const tr = document.createElement("tr");
+
+                        const tdDni = document.createElement("td");
+                        tdDni.textContent = conv.dni || "N/A";
+                        tr.appendChild(tdDni);
+
+                        const tdNombre = document.createElement("td");
+                        tdNombre.textContent = conv.nombre || "N/A";
+                        tr.appendChild(tdNombre);
+
+                        const tdFecha = document.createElement("td");
+                        tdFecha.textContent = conv.fecha;
+                        tr.appendChild(tdFecha);
+
+                        const tdLink = document.createElement("td");
+                        const link = document.createElement("a");
+                        link.href = `#conversacion/${conv.id_conversacion}`;
+                        link.classList.add("conversation-link");
+                        link.textContent = "Ver conversación";
+
+                        // Añadir el contenido de los mensajes como atributo data-mensajes
+                        if (conv.mensaje) {
+                            link.setAttribute("data-mensajes", JSON.stringify(conv.mensaje));
+                        }
+                            tdLink.appendChild(link);
+                            tr.appendChild(tdLink);
+
+                            tbody.appendChild(tr);
+                        });
+                }
+
+            } catch (error) {
+                console.error("Error al cargar conversaciones:", error);
+            }
+        }
+
+        // Evento de búsqueda por DNI
+        document.getElementById("search-input").addEventListener("input", function () {
+            const valor = this.value.trim();
+            cargarConversaciones(valor);  // Llamamos a la función con el valor del DNI
         });
+
+        // Función para cargar la conversación completa al hacer clic en el enlace
+        async function cargarConversacion(idConversacion) {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/conversacion/${idConversacion}`);
+                if (!response.ok) {
+                    throw new Error('Error al cargar la conversación');
+                }
+                
+                const data = await response.json();
+                
+                // Limpiar los mensajes anteriores
+                const conversacionContent = document.querySelector('.conversacion-content');
+                conversacionContent.innerHTML = "";
+                
+                // Agregar los nuevos mensajes
+                data.forEach(mensaje => {
+                    const mensajeElement = document.createElement('div');
+                    mensajeElement.classList.add(mensaje.tipo === 'recibido' ? 'message received' : 'message sent');
+                    
+                    mensajeElement.innerHTML = `
+                        <p>${mensaje.contenido}</p>
+                        <span>${mensaje.fecha}</span>
+                    `;
+                    
+                    conversacionContent.appendChild(mensajeElement);
+                });
+
+                document.getElementById('conversacion-modal').classList.remove('hidden');
+            } catch (error) {
+                console.error('Error al cargar la conversación:', error);
+            }
+        }
+
+        // Llamada inicial a cargar las conversaciones
+        cargarConversaciones();
+
+        const autenticado = localStorage.getItem("autenticado");
+        const rol = localStorage.getItem("rol");
+        const correo = localStorage.getItem("correo");
+
+        if (!autenticado || rol !== "medico") {
+            window.location.href = "../index.html";
+        }
+
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = "../index.html";
+        }
+
+        fetch(`http://127.0.0.1:5000/api/usuario_por_correo_y_rol?correo=${correo}&rol=${rol}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("usuario-nombre").textContent = data.nombre || "Usuario";
+            })
+            .catch(() => {
+                document.getElementById("usuario-nombre").textContent = "Usuario";
+            });
     </script>
 </body>
 </html>

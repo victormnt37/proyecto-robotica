@@ -20,7 +20,8 @@ http://localhost:8000/web-page/
 ws://127.0.0.1:9090/
 
 
-
+#lanzar la bdd
+python3 app.py
 
 # PARA LANZAR NAVEGACION (ADICIONAL)
 

@@ -30,9 +30,7 @@
 
     <main class="container main-content">
         <div class="search-container">
-            <input type="text" 
-                   class="search-input" 
-                   placeholder="Introduzca su DNI/SIP">
+            <input type="text" class="search-input" placeholder="Introduzca su DNI/SIP">
         </div>
 
         <table class="patients-table">
@@ -43,33 +41,30 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Ejemplo de datos -->
-                <tr>
-                    <td>2024-03-15 09:30</td>
-                    <td>
-                        <a href="#conversacion/1" class="conversation-link" data-conversation-id="1">
-                            Ver conversación
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2024-02-28 11:15</td>
-                    <td>
-                        <a href="#conversacion/2" class="conversation-link" data-conversation-id="2">
-                            Ver conversación
-                        </a>
-                    </td>
-                </tr>
+                <!-- Conversaciones se insertan aquí -->
             </tbody>
         </table>
     </main>
+
+    <!-- Modal para mostrar la conversación -->
+    <div id="conversacion-modal" class="modal-overlay hidden">
+        <div class="conversacion-popup card">
+            <div class="modal-header">
+                <h3>Conversación con <span id="patient-name">Paciente</span></h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="conversacion-content">
+                <!-- Mensajes se insertan aquí -->
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="main-footer">
         <div class="container footer-content">
             <p class="copyright">&copy; 2025 Kyron Registration - Sistema de Gestión Hospitalaria</p>
             <div class="footer-info">
-                <span>Contacto: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4e3d213e213c3a2b0e25373c2120262b2f223a26602d2123">[email&#160;protected]</a></span>
+                <span>Contacto: <a href="#" class="__cf_email__">contacto@kyron.com</a></span>
                 <nav class="social-links">
                     <a href="#" class="social-link">LinkedIn</a>
                     <a href="#" class="social-link">Twitter</a>
@@ -77,47 +72,102 @@
             </div>
         </div>
     </footer>
-
-    <div id="conversacion-modal" class="modal-overlay hidden">
-        <div class="conversacion-popup card">
-            <div class="modal-header">
-                <h3>Conversación con <span id="patient-name"></span></h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="conversacion-content">
-                <!-- Mensajes simulados -->
-                <div class="message received">
-                    <p>¿Debo tomar la medicación antes o después de comer?</p>
-                    <span>15/03 09:32</span>
-                </div>
-                <div class="message sent">
-                    <p>Debe tomarla 30 minutos antes del desayuno.</p>
-                    <span>15/03 09:35</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Control del modal
-        document.querySelectorAll('.conversation-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const paciente = e.target.closest('tr').querySelector('td:nth-child(2)').textContent;
-                document.getElementById('patient-name').textContent = paciente;
-                document.getElementById('conversacion-modal').classList.remove('hidden');
+        const API_URL = "http://127.0.0.1:5000";
+        
+        // Función para renderizar conversaciones en la tabla
+        function renderizarConversaciones(conversaciones) {
+            const tbody = document.querySelector('.patients-table tbody');
+            tbody.innerHTML = '';
+    
+            const conversacionesAgrupadas = {};
+            conversaciones.forEach(conv => {
+                if (!conversacionesAgrupadas[conv.id_paciente]) {
+                    conversacionesAgrupadas[conv.id_paciente] = [];
+                }
+                conversacionesAgrupadas[conv.id_paciente].push(conv);
             });
-        });
+    
+            for (const [id_paciente, msgs] of Object.entries(conversacionesAgrupadas)) {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${msgs[0].fecha}</td>
+                    <td>
+                        <a href="#conversacion/${id_paciente}" 
+                           class="conversation-link" 
+                           data-id="${id_paciente}" 
+                           data-mensajes='${JSON.stringify(msgs)}'>
+                            Ver conversación
+                        </a>
+                    </td>
+                `;
+                tbody.appendChild(fila);
+            }
+    
+            // Agregar eventos a cada enlace
+            document.querySelectorAll('.conversation-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const mensajes = JSON.parse(link.getAttribute('data-mensajes'));
+                    const fecha = link.closest('tr').querySelector('td:first-child').textContent;
+    
+                    document.getElementById('patient-name').textContent = 'Paciente';
+                    const content = document.querySelector('.conversacion-content');
+                    content.innerHTML = '';
+    
+                    mensajes.forEach(mensaje => {
+                        const partes = mensaje.mensaje.split(/(paciente:|robot:)/i).filter(p => p.trim() !== "");
 
+                        for (let i = 0; i < partes.length; i += 2) {
+                            const autor = partes[i].toLowerCase().includes('paciente') ? 'Paciente' : 'Robot';
+                            const contenido = partes[i + 1] ? partes[i + 1].trim() : '';
+
+                            content.innerHTML += `
+                                <div class="message ${autor === 'Paciente' ? 'received' : 'sent'}">
+                                    <p>${contenido}</p>
+                                    <span>${fecha}</span>
+                                </div>
+                            `;
+                        }
+                    });
+    
+                    document.getElementById('conversacion-modal').classList.remove('hidden');
+                });
+            });
+        }
+    
+        // Cargar todas las conversaciones al inicio
+        fetch(`${API_URL}/api/conversaciones`)
+            .then(res => res.json())
+            .then(data => renderizarConversaciones(data))
+            .catch(err => console.error("Error al cargar conversaciones:", err));
+    
+        // Buscar por DNI al escribir en el input
+        document.querySelector('.search-input').addEventListener('input', (e) => {
+            const dni = e.target.value.trim();
+            if (dni.length >= 6) {
+                fetch(`${API_URL}/api/conversaciones/${dni}`)
+                    .then(res => res.json())
+                    .then(data => renderizarConversaciones(data))
+                    .catch(err => console.error('Error al buscar por DNI:', err));
+            } else {
+                fetch(`${API_URL}/api/conversaciones`)
+                    .then(res => res.json())
+                    .then(data => renderizarConversaciones(data));
+            }
+        });
+    
+        // Cerrar modal
         document.querySelector('.close-btn').addEventListener('click', () => {
             document.getElementById('conversacion-modal').classList.add('hidden');
         });
-
+    
         document.querySelector('.modal-overlay').addEventListener('click', (e) => {
             if (e.target.classList.contains('modal-overlay')) {
                 document.getElementById('conversacion-modal').classList.add('hidden');
             }
         });
     </script>
+    
 </body>
 </html>

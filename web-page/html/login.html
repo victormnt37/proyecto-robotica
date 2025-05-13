@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/login.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <a href="../index.html" class="back-arrow" title="Volver">
@@ -18,7 +26,7 @@
             <h1 class="login-title">Inicia Sesión</h1>
             <form id="loginForm">
                 <input type="email" id="email" placeholder="Correo electrónico" required>
-                <input type="password" id="password" placeholder="Contraseña" required>
+                <input type="password" id="contrasena" placeholder="Contraseña" required>
                 <a href="recuperar.html" class="forgot-link">¿Olvidaste tu contraseña?</a>
                 <button type="submit" class="btn-login">Acceder al Sistema</button>
                 <p class="error-message" id="errorMsg"></p>
@@ -39,6 +47,54 @@
         </div>
     </footer>
 
-    <script src="../js/login.js"></script>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("contrasena").value;
+            const errorMsg = document.getElementById("errorMsg");
+            errorMsg.textContent = ""; // Limpiar el mensaje de error previo
+
+            fetch("http://127.0.0.1:5000/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    correo_electronico: email,
+                    contrasena: password
+                })
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Credenciales incorrectas");
+                    }
+                })
+                .then((data) => {
+                    if (data.status === "success") {
+                        localStorage.setItem("rol", data.role); // guardar rol
+                        localStorage.setItem("correo", data.correo); // guardar rol
+                        localStorage.setItem("autenticado", "true"); // flag de sesión activa
+
+                        // Redirigir según el rol
+                        if (data.role === "paciente") {
+                            window.location.href = "paciente.html";
+                        } else if (data.role === "medico") {
+                            window.location.href = "panel_medico.html";
+                        } else if (data.role === "admin") {
+                            window.location.href = "panel_de_control.html";
+                        }
+                    } else {
+                        alert("Credenciales inválidas");
+                    }
+                })
+                .catch((error) => {
+                    errorMsg.textContent = "Credenciales incorrectas. Verifica tu correo y contraseña.";
+                });
+        });
+    </script>
 </body>
 </html>

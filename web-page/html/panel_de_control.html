@@ -67,28 +67,28 @@
     <!-- Header Autenticado -->
     <header class="header">
         <div class="container header-content">
-            <a href="/" class="logo">
-                <img src="../assets/logo.png" alt="Kyron Robotics" class="logo-img">
-                <span class="logo-text">Kyron</span>
-            </a>
-            <div class="user-panel">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                        </svg>
-                    </div>
-                    <span class="user-name">Juanba Peris</span>
-                </div>
-                <button class="btn btn-header" onclick="window.location.href='../index.html'">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-                    </svg>
-                    Cerrar Sesión
-                </button>
+          <a href="/" class="logo">
+            <img src="../assets/logo.png" alt="Kyron Robotics" class="logo-img">
+            <span class="logo-text">Kyron</span>
+          </a>
+          <div class="user-panel">
+            <div class="user-info">
+              <div class="user-avatar">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+              </div>
+              <span id="usuario-nombre" class="user-name">Cargando...</span>
             </div>
+            <button class="btn btn-header" onclick="cerrarSesion()">
+              <svg viewBox="0 0 24 24">
+                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+              </svg>
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
-    </header>
+      </header>
 
     <main class="container">
         <div class="dashboard-layout">
@@ -245,5 +245,36 @@
     <script src="control_salas.js"></script>
     
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9324b24bfa4ebcc2',t:'MTc0NDk4NDkxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+
+    <script>
+        // Validar sesión y rol
+        const autenticado = localStorage.getItem("autenticado");
+        const rol = localStorage.getItem("rol");
+        const correo = localStorage.getItem("correo");
+      
+        if (!autenticado || rol !== "admin") {
+            window.location.href = "../index.html";
+        }
+      
+        function cerrarSesion() {
+            localStorage.clear();
+            window.location.href = "../index.html";
+        }
+      
+        // Obtener nombre desde backend usando correo y rol
+        fetch(`http://127.0.0.1:5000/api/usuario_por_correo_y_rol?correo=${correo}&rol=${rol}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.nombre) {
+                    document.getElementById("usuario-nombre").textContent = data.nombre;
+                } else {
+                    document.getElementById("usuario-nombre").textContent = "Usuario";
+                }
+            })
+            .catch(err => {
+                console.error("Error al obtener nombre del usuario:", err);
+                document.getElementById("usuario-nombre").textContent = "Usuario";
+            });
+      </script>
 </body>
 </html>
