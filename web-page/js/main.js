@@ -109,6 +109,18 @@ document.addEventListener('DOMContentLoaded', event => {
             document.getElementById("num-enfermeros").textContent = message.enfermeros;
         });
 
+          // Suscripción a id_cara
+          const id_caras_topic = new ROSLIB.Topic({
+            ros: data.ros,
+            name: '/vision/id_cara',
+            messageType: 'kyron_interface/msg/PersonaIdentificada'
+        });
+
+        id_caras_topic.subscribe((message) => {
+            // Actualizar el DOM con los datos del mensaje
+            document.getElementById("persona-identificada").textContent = message.nombre_persona;
+        });
+
         updateCameraFeed()
     }
 
