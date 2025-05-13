@@ -20,7 +20,8 @@ http://localhost:8000/web-page/
 ws://127.0.0.1:9090/
 
 
-
+#lanzar la bdd
+python3 app.py
 
 # PARA LANZAR NAVEGACION (ADICIONAL)
 
@@ -29,7 +30,7 @@ ws://127.0.0.1:9090/
 cd ~/proyecto-robotica/
 export TURTLEBOT3_MODEL=burger_pi
 source install/setup.bash
-ros2 launch kyron_nav kyron_nav_sim.launch.py 
+ros2 launch kyron_nav kyron_nav_v2.launch.py 
 
 ### Terminal 2
 
@@ -51,3 +52,8 @@ ros2 run web_video_server web_video_server
 
 ### Terminal 5
 python3 -m http.server 8000
+
+### Terminal 6
+source install/setup.bash
+cd ~/proyecto-robotica/web-page/server
+python3 websocket_server.py
