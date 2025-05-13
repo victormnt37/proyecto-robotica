@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', event => {
     document.getElementById("btn_dis").addEventListener("click", disconnect)
     estado = document.getElementById('estado')
     iconoEstado = document.getElementById('connection-status')
+    tarea = document.getElementById('tarea-actual')
     document.getElementById("btn_move").addEventListener("click", move)
     document.getElementById("btn_stop").addEventListener("click", stop)
     document.getElementById("btn_right").addEventListener("click", derecha)
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', event => {
     document.getElementById("btn_waypoints").addEventListener("click", () => {
         console.log('Comienza la patrulla');
         wsControl.send(JSON.stringify({ command: "waypoint_routine" }));
+        tarea.innerHTML = "Patrullando";
     });
 
     // botones de dirección a salas
@@ -34,7 +36,7 @@ document.addEventListener('DOMContentLoaded', event => {
         const button = document.getElementById(id);
         if (button) {
             button.addEventListener("click", () => {
-                sendGoal(x, y, w);
+                sendGoal(x, y, w, button.innerHTML);
             });
         } else {
             console.warn(`Botón con id "${id}" no encontrado.`);
@@ -94,6 +96,8 @@ document.addEventListener('DOMContentLoaded', event => {
         })
 
         updateCameraFeed()
+
+        tarea.innerHTML = "En espera";
     }
 
 
@@ -177,7 +181,7 @@ document.addEventListener('DOMContentLoaded', event => {
         //img.src = `http://localhost:8080/stream?topic=/turtlebot3/camera/image_raw&console.log("Cactualizando: http://0.0.0.0:8080/stream?topic=/camera/image_raw)"`
     }
 
-    function sendGoal(x, y, w) {
+    function sendGoal(x, y, w, sala) {
         const msg = {
             command: "go_to_goal",
             x: x,
@@ -185,6 +189,7 @@ document.addEventListener('DOMContentLoaded', event => {
             w: w
         };
         wsControl.send(JSON.stringify(msg));
+        tarea.innerHTML = "Dirigiéndose a " + sala;
     }
     
 });

@@ -20,7 +20,7 @@ async def handler(websocket):
                     x = str(data["x"])
                     y = str(data["y"])
                     w = str(data["w"])
-                    cmd = f"cd ~/proyecto-robotica && source install/setup.bash && ros2 run kyron_nav kyron_goal_pub ({x}, {y}, {w})"
+                    cmd = f"cd ~/proyecto-robotica && source install/setup.bash && ros2 run kyron_nav kyron_goal_pub {x} {y} {w}"
                     subprocess.Popen(["bash", "-c", cmd])
                     await websocket.send(f"Goal enviado a ({x}, {y}, {w})")
 
