@@ -56,3 +56,10 @@ source install/setup.bash
 cd ~/proyecto-robotica/web-page/server
 python3 websocket_server.py
 exec bash"
+
+# Terminal 7
+gnome-terminal -- bash -c "
+source install/setup.bash
+cd ~/proyecto-robotica/web-page/
+python3 app.py
+exec bash"

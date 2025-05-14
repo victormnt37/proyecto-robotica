@@ -10,6 +10,7 @@
 gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 source install/setup.bash
+export ROS_DOMAIN_ID=11
 ros2 launch kyron_nav kyron_nav_irl.launch.py
 exec bash"
 
@@ -28,6 +29,7 @@ exec bash"
 gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 source install/setup.bash
+export ROS_DOMAIN_ID=11
 ros2 launch kyron_vision kyron_vision_irl.launch.py
 exec bash"
 
@@ -35,6 +37,7 @@ exec bash"
 gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 source install/setup.bash
+export ROS_DOMAIN_ID=11
 ros2 launch rosbridge_server rosbridge_websocket_launch.xml
 exec bash"
 
@@ -42,6 +45,8 @@ exec bash"
 gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 source install/setup.bash
+export ROS_DOMAIN_ID=11
+
 ros2 run web_video_server web_video_server
 exec bash"
 
