@@ -70,3 +70,5 @@ source install/setup.bash
 cd ~/proyecto-robotica/web-page/server
 python3 websocket_server.py
 exec bash"
+
+# lanzar camara

@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', event => {
     data = {
         // ros connection
         ros: null,
-        rosbridge_address: 'ws://127.0.0.1:9090/', // CAMBIAR ESTA IP PARA EL ROBOT REAL (R11:192.168.0.136)
+        rosbridge_address: 'ws://127.0.0.1:9090/', // CAMBIAR ESTA IP PARA EL ROBOT REAL (R11:192.168.0.134)
         connected: false,
         // service information 
         service_busy: false, 
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', event => {
             messageType: 'geometry_msgs/msg/Twist'
         })
         let message = new ROSLIB.Message({
-            linear: {x: 0.1, y: 0, z: 0, },
+            linear: {x: 0, y: 0, z: 0, },
             angular: {x: 0, y: 0, z: -0.2, },
         })
         topic.publish(message)
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', event => {
             messageType: 'geometry_msgs/msg/Twist'
         })
         let message = new ROSLIB.Message({
-            linear: {x: 0.1, y: 0, z: 0, },
+            linear: {x: 0, y: 0, z: 0, },
             angular: {x: 0, y: 0, z: 0.2, },
         })
         topic.publish(message)

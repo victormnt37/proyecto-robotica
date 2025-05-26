@@ -34,7 +34,7 @@ export ROS_DOMAIN_ID=X # donde X es vuestro número de equipo
 
 En la terminal ssh:
 ```bash
-ssh ubuntu@IP_DEL_ROBOT
+ssh ubuntu@IP_DEL_ROBOT # 192.168.0.134
 
 ros2 launch turtlebot3_bringup robot.launch.py
 ```
