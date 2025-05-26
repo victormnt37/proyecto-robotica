@@ -43,6 +43,7 @@ ros2 launch turtlebot3_bringup robot.launch.py
 
 [Terminal 1]
 ```bash
+ssh ubuntu@IP_DEL_ROBOT # 192.168.0.134
 ros2 run image_tools cam2image --ros-args -p burger_mode:=false -p frequency:=10.0 -p reliability:=best_effort 
 
 

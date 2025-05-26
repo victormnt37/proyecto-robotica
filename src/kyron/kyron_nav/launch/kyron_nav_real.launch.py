@@ -10,8 +10,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    pkg_name='kyron_nav'
-    pkg_kyron_mundo = get_package_share_directory('kyron_mundo')
+    pkg_name = 'kyron_nav'
 
     nav2_yaml = os.path.join(get_package_share_directory(pkg_name), 'config', 'kyron_nav_params.yaml')
     map_file = os.path.join(get_package_share_directory(pkg_name), 'config', 'hospital_world.yaml')
@@ -19,9 +18,7 @@ def generate_launch_description():
 
     urdf = os.path.join(get_package_share_directory('turtlebot3_description'), 'urdf', 'turtlebot3_burger.urdf')
 
-
     return LaunchDescription([
-
 
         Node(
             package='robot_state_publisher',
@@ -33,11 +30,11 @@ def generate_launch_description():
         ),
 
         Node(
-            package = 'nav2_map_server',
-            executable = 'map_server',
-            name = 'map_server',
-            output = 'screen',
-            parameters=[{'use_sim_time': False}, {'yaml_filename':map_file}]
+            package='nav2_map_server',
+            executable='map_server',
+            name='map_server',
+            output='screen',
+            parameters=[{'use_sim_time': False}, {'yaml_filename': map_file}]
         ),
 
         Node(
@@ -48,12 +45,11 @@ def generate_launch_description():
             parameters=[nav2_yaml]
         ),
 
-
         Node(
-            package = 'nav2_planner',
-            executable = 'planner_server',
-            name = 'planner_server',
-            output = 'screen',
+            package='nav2_planner',
+            executable='planner_server',
+            name='planner_server',
+            output='screen',
             parameters=[nav2_yaml]
         ),
 
@@ -64,6 +60,7 @@ def generate_launch_description():
             output='screen',
             parameters=[nav2_yaml, {'use_sim_time': False}]
         ),
+
         Node(
             package='nav2_bt_navigator',
             executable='bt_navigator',
@@ -71,6 +68,7 @@ def generate_launch_description():
             output='screen',
             parameters=[nav2_yaml, {'use_sim_time': False}]
         ),
+
         Node(
             package='nav2_recoveries',
             executable='recoveries_server',
@@ -78,41 +76,50 @@ def generate_launch_description():
             output='screen',
             parameters=[nav2_yaml, {'use_sim_time': False}]
         ),
+
         Node(
             package='nav2_lifecycle_manager',
             executable='lifecycle_manager',
             name='lifecycle_manager_pathplanner',
             output='screen',
-            parameters=[{'use_sim_time': False},
-                        {'autostart': True},
-                        {'bond_timeout':4.0},#The bond_timeout gives the nodes a few seconds to initialize before the lifecycle manager attempts to activate them.
-                        {'node_names':['map_server', 'amcl', 'planner_server', 'controller_server', 'recoveries_server', 'bt_navigator','waypoint_follower']}]
+            parameters=[{
+                'use_sim_time': False,
+                'autostart': True,
+                'bond_timeout': 4.0,
+                'node_names': [
+                    'map_server',
+                    'amcl',
+                    'planner_server',
+                    'controller_server',
+                    'recoveries_server',
+                    'bt_navigator',
+                    'waypoint_follower'
+                ]
+            }]
         ),
 
-
-         Node(
-               package='rviz2',
-               executable='rviz2',
-               name='rviz2',
-               arguments=['-d', rviz_config_dir],
-               parameters=[{'use_sim_time': False}],
-               output='screen'
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz2',
+            arguments=['-d', rviz_config_dir],
+            parameters=[{'use_sim_time': False}],
+            output='screen'
         ),
 
-         Node(
+        Node(
             package='kyron_nav',
             executable='kyron_initial_pose_pub',
             name='kyron_initial_pose_pub',
             output='screen',
             parameters=[{'use_sim_time': False}]
         ),
-          
-          Node(
+
+        Node(
             package='nav2_waypoint_follower',
             executable='waypoint_follower',
             name='waypoint_follower',
             output='screen',
             parameters=[nav2_yaml, {'use_sim_time': False}]
         )
-        
     ])
