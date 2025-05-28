@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', event => {
             messageType: 'geometry_msgs/msg/Twist'
         })
         let message = new ROSLIB.Message({
-            linear: {x: 0.1, y: 0, z: 0, },
+            linear: {x: 0.2, y: 0, z: 0, },
             angular: {x: 0, y: 0, z: 0, },
         })
         topic.publish(message)
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', event => {
         })
         let message = new ROSLIB.Message({
             linear: {x: 0, y: 0, z: 0, },
-            angular: {x: 0, y: 0, z: -0.2, },
+            angular: {x: 0, y: 0, z: -0.5, },
         })
         topic.publish(message)
     }
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', event => {
         })
         let message = new ROSLIB.Message({
             linear: {x: 0, y: 0, z: 0, },
-            angular: {x: 0, y: 0, z: 0.2, },
+            angular: {x: 0, y: 0, z: 0.5, },
         })
         topic.publish(message)
     }
