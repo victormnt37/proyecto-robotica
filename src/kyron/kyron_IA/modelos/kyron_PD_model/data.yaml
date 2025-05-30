@@ -1,0 +1,18 @@
+#CAMBIAR ESTO
+train: C:\Users\bigli\Desktop\Programacion y Codigo\YOLO\Modelo_2\train 
+val: C:\Users\bigli\Desktop\Programacion y Codigo\YOLO\Modelo_2\val 
+
+augmentation:
+  hsv_h: 0.015  # Ajuste de tono
+  hsv_s: 0.7    # Saturación
+  hsv_v: 0.4    # Brillo
+  translate: 0.1 # Traslación
+  scale: 0.5     # Escala
+  shear: 0.0     # Corte
+  flipud: 0.0    # Volteo vertical
+  fliplr: 0.5    # Volteo horizontal (50% de probabilidad)
+
+
+nc: 2
+
+names: ["paciente","personal_medico"]
