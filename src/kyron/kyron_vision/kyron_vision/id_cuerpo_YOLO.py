@@ -6,7 +6,7 @@ from sensor_msgs.msg import Image
 from rclpy.node import Node
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 
-from kyron_interface.msg import ConteoPersonas
+from kyron_interface.msg import ConteoPersonas2
 from ultralytics import YOLO
 import os
 
@@ -42,7 +42,7 @@ class ID_Cuerpo_YOLO(Node):
         self.model = YOLO("src/kyron/kyron_ia/modelos/kyron_PD_model/kyron_PD_model.pt")
 
 
-        #self.publisher_id_cuerpo= self.create_publisher(ConteoPersonas,"/vision/id_cuerpo",10)
+        self.publisher_id_cuerpo= self.create_publisher(ConteoPersonas2,"/vision/id_cuerpo",10)
 
 
     def camera_callback(self,data):
@@ -58,30 +58,61 @@ class ID_Cuerpo_YOLO(Node):
             
             results= self.model(cv_image)
 
+
+            self.publicar_conteo(self.count_classes(results))
+
         except CvBridgeError as e:
             print(e)
     
         cv2.imshow("YOLO Detection", results[0].plot())
         cv2.waitKey(1)
 
+
+    def count_classes(self,results):
+        """mantiene un conteo de las clases detectadas
+
+        Args:
+            results (list): lista de resultados devueltos por el modelo entrenado
+
+        Returns:
+            conteo(dictionary): diccionario con el conteo.
+        """
+        
+    # Inicializamos conteo
+        conteo = {
+                "personal": 0,
+                "paciente": 0
+            }
+        
+        result=results[0]
+
+        # Obtenemos las clases detectadas
+        nombres_clases = result.names  # Diccionario {id: nombre}
+        clases_detectadas = result.boxes.cls.tolist()  # Lista de ids (float)
+
+        for clase_id in clases_detectadas:
+                nombre_clase = nombres_clases[int(clase_id)]
+                if nombre_clase in conteo:
+                    conteo[nombre_clase] += 1
+        
+        return conteo
+
     def publicar_conteo(self,conteo):
         """publica el conteo actual de cada cuerpo detectado 
-        (hay 5 doctores, hay 5 pacientes,etc)
+        (hay 2 personal medico, hay 2 pacientes,etc)
 
         Args:
             conteo (dictionary{string:int}): diccionario con el tipo de persona y cuantas veces aparece.
         """
         #Creamos nuestro mensaje
-        msg = ConteoPersonas()
-        msg.doctores= conteo['Dr/Dra']
-        msg.pacientes= conteo['Paciente']
-        msg.internados=conteo['Internad@']
-        msg.enfermeros=conteo['Enfermer@']
-        msg.cirujanos=conteo['Cirujan@']
+        msg = ConteoPersonas2()
+        msg.personal= conteo['personal']
+        msg.pacientes= conteo['paciente']
+
 
         self.publisher_id_cuerpo.publish(msg)
 
-        self.get_logger().info(f'Num_doctores: {msg.doctores} | Num_pacientes: {msg.pacientes} | Num_internados: {msg.internados} | Num_enfermeros: {msg.enfermeros} | Num_cirujanos: {msg.cirujanos}')
+        self.get_logger().info(f'Num_personal: {msg.personal} | Num_pacientes: {msg.pacientes}')
 
 
 
