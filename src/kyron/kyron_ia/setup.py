@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'kyron_IA'
+package_name = 'kyron_ia'
 
 setup(
     name=package_name,
