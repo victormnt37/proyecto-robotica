@@ -1,0 +1,2 @@
+bool violencia_detectada
+bool caida_detectada
