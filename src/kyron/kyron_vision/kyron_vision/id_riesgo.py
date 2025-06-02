@@ -88,9 +88,10 @@ class ID_riesgo(Node):
         for clase_id in clases_detectadas:
                 nombre_clase = nombres_clases[int(clase_id)]
 
-                if nombre_clase == "violencie":
+                if nombre_clase == "violence" or nombre_clase == "violences":
                     violencia_detectada=True
-                if nombre_clase=="fall":
+                    
+                if nombre_clase=="fall"or nombre_clase == "falls":
                      caida_detectada=True
         
         return violencia_detectada,caida_detectada
