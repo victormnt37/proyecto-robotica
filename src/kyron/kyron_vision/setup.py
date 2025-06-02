@@ -25,6 +25,7 @@ setup(
             'capture_image=kyron_vision.capture_image:main',
             'id_cuerpo=kyron_vision.id_cuerpo_YOLO:main',
             'id_cara=kyron_vision.id_cara:main',
+            'id_riesgo=kyron_vision.id_riesgo:main',
             'listener=kyron_vision.listener:main',
             'listener_cuerpo=kyron_vision.listener_cuerpo:main'
 
