@@ -157,10 +157,10 @@ document.addEventListener('DOMContentLoaded', event => {
 
     function disconnect(){
         stop()
-      data.ros.close()
-      data.connected = false
-    console.log('Clic en botón de desconexión')
-}
+        data.ros.close()
+        data.connected = false
+        console.log('Clic en botón de desconexión')
+    }
     function derecha() {
         let topic = new ROSLIB.Topic({
             ros: data.ros,
