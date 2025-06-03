@@ -20,6 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'transcriber=kyron_ia.transcriber:main',
+            'voicecmd=kyron_ia.voicecmd:main'
         ],
     },
 )

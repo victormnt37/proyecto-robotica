@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', event => {
     document.getElementById("btn_stop").addEventListener("click", stop)
     document.getElementById("btn_right").addEventListener("click", derecha)
     document.getElementById("btn_left").addEventListener("click", izquierda)
+    
 
 
 
@@ -118,16 +119,13 @@ document.addEventListener('DOMContentLoaded', event => {
         const conteoPersonasTopic = new ROSLIB.Topic({
             ros: data.ros,
             name: '/vision/id_cuerpo',
-            messageType: 'kyron_interface/msg/ConteoPersonas'
+            messageType: 'kyron_interface/msg/ConteoPersonas2'
         });
 
         conteoPersonasTopic.subscribe((message) => {
             // Actualizar el DOM con los datos del mensaje
             document.getElementById("num-pacientes").textContent = message.pacientes;
-            document.getElementById("num-doctores").textContent = message.doctores;
-            document.getElementById("num-cirujanos").textContent = message.cirujanos;
-            document.getElementById("num-internados").textContent = message.internados;
-            document.getElementById("num-enfermeros").textContent = message.enfermeros;
+            document.getElementById("num-personal").textContent = message.personal;
         });
 
           // Suscripción a id_cara
