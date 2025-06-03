@@ -3,6 +3,9 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+from rclpy.action import ActionClient
+from nav2_msgs.action import NavigateToPose
+from geometry_msgs.msg import PoseStamped
 import math
 import speech_recognition as sr
 
@@ -18,6 +21,9 @@ class VoiceCmd(Node):
         
         # Publicador para comandos de movimiento
         self.cmd_vel_pub = self.create_publisher(Twist, '/cmd_vel', 10)
+
+        # Cliente para que vaya a las salas
+        self.nav_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
         
         # Suscriptor a la odometría
         self.odom_sub = self.create_subscription(
@@ -50,22 +56,6 @@ class VoiceCmd(Node):
             orientation_q.w
         )
 
-    def quaternion_to_euler(self, x, y, z, w):
-        """Convierte quaternion a ángulos de Euler (roll, pitch, yaw)"""
-        t0 = +2.0 * (w * x + y * z)
-        t1 = +1.0 - 2.0 * (x * x + y * y)
-        roll_x = math.atan2(t0, t1)
-     
-        t2 = +2.0 * (w * y - z * x)
-        t2 = +1.0 if t2 > +1.0 else t2
-        t2 = -1.0 if t2 < -1.0 else t2
-        pitch_y = math.asin(t2)
-     
-        t3 = +2.0 * (w * z + x * y)
-        t4 = +1.0 - 2.0 * (y * y + z * z)
-        yaw_z = math.atan2(t3, t4)
-     
-        return roll_x, pitch_y, yaw_z  # En radianes
 
     def transcribir_audio(self):
         """Captura y procesa comandos de voz"""
@@ -80,15 +70,119 @@ class VoiceCmd(Node):
         try:
             texto = self.recognizer.recognize_google(audio, language="es-ES").lower()
             self.get_logger().info(f"📝 Comando detectado: {texto}")
-            self.procesar_comando(texto)
+            self.procesar_comandos(texto)
 
         except sr.UnknownValueError:
             self.get_logger().warn("❌ No se entendió el audio.")
         except sr.RequestError as e:
             self.get_logger().error(f"🚫 Error con el servicio de Google: {e}")
 
-    def procesar_comando(self, comando):
+
+    def procesar_comandos(self, comando):
+        """Procesa todos los comandos"""
+        self.procesar_comando_BM(comando)
+        self.procesar_comandos_a_salas(comando)
+
+
+    def procesar_comandos_a_salas(self, comando):
+        """Detecta si el comando contiene una sala válida y lanza el goal"""
+        salas = {
+            "entrada": (0.0, 15.0, 0.0),
+            "recepciòn": (0.0, 2.0, 0.0),
+            "consulta 5": (-8.0, -8.0, 0.0),
+            "consulta 6": (-7.0, -22.0, 0.0),
+            "consulta 7": (-9.0, -27.0, 0.0),
+            "consulta 8": (6.0, -28.0, 0.0),
+            "consulta 11": (7.0, -22.0, 0.0),
+            "consulta 12": (8.0, -8.0, 0.0),
+            "consulta 16": (5.0, 17.0, 0.0),
+            "consulta 1": (-5.0, 17.0, 0.0),
+        }
+
+        for nombre_sala in salas:
+            if nombre_sala in comando.lower():
+                self.enviar_a_sala(nombre_sala)
+                return  # Termina después de encontrar la primera coincidencia
+
+        self.get_logger().warn(f"⚠️ Comando no reconocido: '{comando}'")
+
+
+
+    def enviar_a_sala(self, nombre_sala):
+        salas = {
+            "entrada": (0.0, 15.0, 0.0),
+            "recepciòn": (0.0, 2.0, 0.0),
+            "consulta 5": (-8.0, -8.0, 0.0),
+            "consulta 6": (-7.0, -22.0, 0.0),
+            "consulta 7": (-9.0, -27.0, 0.0),
+            "consulta 8": (6.0, -28.0, 0.0),
+            "consulta 11": (7.0, -22.0, 0.0),
+            "consulta 12": (8.0, -8.0, 0.0),
+            "consulta 16": (5.0, 17.0, 0.0),
+            "consulta 1": (-5.0, 17.0, 0.0),
+        }
+
+        if nombre_sala not in salas:
+            self.get_logger().warn(f"⚠️ Sala desconocida: {nombre_sala}")
+            return
+
+        x, y, w = salas[nombre_sala]
+
+        if not self.nav_client.wait_for_server(timeout_sec=5.0):
+            self.get_logger().error("❌ El servidor de navegación no está disponible.")
+            return
+
+        goal_msg = NavigateToPose.Goal()
+        goal_msg.pose.header.frame_id = 'map'
+        goal_msg.pose.header.stamp = self.get_clock().now().to_msg()
+        goal_msg.pose.pose.position.x = x
+        goal_msg.pose.pose.position.y = y
+        goal_msg.pose.pose.orientation.w = w
+
+        self.get_logger().info(f"📍 El robot va a {nombre_sala}")
+        send_goal_future = self.nav_client.send_goal_async(goal_msg)
+        send_goal_future.add_done_callback(self.goal_response_callback)
+
+
+
+    def goal_response_callback(self, future):
+        goal_handle = future.result()
+
+        if not goal_handle.accepted:
+                self.get_logger().error("Meta rechazada por el servidor.")
+                return
+
+        self.get_logger().info("Meta aceptada, esperando resultado...")
+        get_result_future = goal_handle.get_result_async()
+        get_result_future.add_done_callback(self.get_result_callback)
+
+
+    def get_result_callback(self, future):
+        result = future.result().result
+        status = future.result().status
+
+        if status == 3:
+            self.get_logger().info("🎯 El robot llegó a su destino.")
+        elif status == 4:
+            self.get_logger().info("🛑 Navegación cancelada.")
+        elif status == 5:
+            self.get_logger().error("❌ Navegación fallida.")
+        else:
+            self.get_logger().info(f"ℹ️ Resultado con estado: {status}")
+
+
+    
+    #=====================================================================
+
+    # Funciones de movimiento odoom (esto es solo para probar)
+
+    #======================================================================
+
+
+
+    def procesar_comando_BM(self, comando):
         """Ejecuta acciones basadas en comandos de voz"""
+
         # Comandos de movimiento básico
         if any(palabra in comando for palabra in ["adelante", "avanza", "avanzar"]):
             self.mover_lineal(0.5)  # 0.5 metros adelante
@@ -104,9 +198,31 @@ class VoiceCmd(Node):
             
         elif "para" in comando or "detente" in comando:
             self.detener_movimiento()
+
+        elif "para" in comando or "detente" in comando:
+            self.detener_movimiento()    
             
         else:
             self.get_logger().warn(f"⚠️ Comando no reconocido: '{comando}'")
+
+
+    def quaternion_to_euler(self, x, y, z, w):
+            """Convierte quaternion a ángulos de Euler (roll, pitch, yaw)"""
+            t0 = +2.0 * (w * x + y * z)
+            t1 = +1.0 - 2.0 * (x * x + y * y)
+            roll_x = math.atan2(t0, t1)
+        
+            t2 = +2.0 * (w * y - z * x)
+            t2 = +1.0 if t2 > +1.0 else t2
+            t2 = -1.0 if t2 < -1.0 else t2
+            pitch_y = math.asin(t2)
+        
+            t3 = +2.0 * (w * z + x * y)
+            t4 = +1.0 - 2.0 * (y * y + z * z)
+            yaw_z = math.atan2(t3, t4)
+        
+            return roll_x, pitch_y, yaw_z  # En radianes
+    
 
     def mover_lineal(self, distancia):
         """Mueve el robot una distancia lineal específica (en metros)"""
@@ -182,6 +298,8 @@ class VoiceCmd(Node):
         self.cmd_vel_pub.publish(twist)
         self.moving = False
         self.rotating = False
+
+#===========================================================================================================================
 
 def main(args=None):
     rclpy.init(args=args)
