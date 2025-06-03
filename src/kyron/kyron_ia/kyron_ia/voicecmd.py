@@ -10,6 +10,10 @@ import math
 import speech_recognition as sr
 
 class VoiceCmd(Node):
+    """voicmd
+    nodo que se encarga de enviar comandos por voz para que el paciente pueda solicitar que lo 
+    acompañen  la consulta
+    """
 
     def __init__(self):
         super().__init__('voice_cmd')
@@ -59,6 +63,7 @@ class VoiceCmd(Node):
 
     def transcribir_audio(self):
         """Captura y procesa comandos de voz"""
+
         with sr.Microphone() as source:
             self.get_logger().info("🎤 Di un comando (ej: 'adelante', 'derecha'...)")
             try:
@@ -68,6 +73,7 @@ class VoiceCmd(Node):
                 return
 
         try:
+            #Usamos google para que pueda reconocer el idioma español.
             texto = self.recognizer.recognize_google(audio, language="es-ES").lower()
             self.get_logger().info(f"📝 Comando detectado: {texto}")
             self.procesar_comandos(texto)
@@ -75,17 +81,26 @@ class VoiceCmd(Node):
         except sr.UnknownValueError:
             self.get_logger().warn("❌ No se entendió el audio.")
         except sr.RequestError as e:
-            self.get_logger().error(f"🚫 Error con el servicio de Google: {e}")
+            self.get_logger().error(f"Error con el servicio de Google: {e}")
 
 
     def procesar_comandos(self, comando):
-        """Procesa todos los comandos"""
+        """procesar comandos
+        basado  en el comando recibido, ejecutar alguna de las dos funciones
+
+        Args:
+            comando (string): texto rescatado de la transcripcion
+        """
         self.procesar_comando_BM(comando)
         self.procesar_comandos_a_salas(comando)
 
 
     def procesar_comandos_a_salas(self, comando):
-        """Detecta si el comando contiene una sala válida y lanza el goal"""
+        """Detecta si el comando contiene una sala válida y lanza el goal
+
+         Args:
+            comando (string): texto rescatado de la transcripcion
+        """
         salas = {
             "entrada": (0.0, 15.0, 0.0),
             "recepciòn": (0.0, 2.0, 0.0),
@@ -99,16 +114,27 @@ class VoiceCmd(Node):
             "consulta 1": (-5.0, 17.0, 0.0),
         }
 
+        #Si la sala mencionada esta en el directorio de saalas
         for nombre_sala in salas:
             if nombre_sala in comando.lower():
-                self.enviar_a_sala(nombre_sala)
+                self.enviar_a_sala(nombre_sala)#enviar esa sala
                 return  # Termina después de encontrar la primera coincidencia
 
-        self.get_logger().warn(f"⚠️ Comando no reconocido: '{comando}'")
+        self.get_logger().warn(f"⚠️ SALA: Comando no reconocido: '{comando}'")
 
+#=====================================================================
 
+# Funciones para enviar a salas
+
+#======================================================================
 
     def enviar_a_sala(self, nombre_sala):
+        """Detecta si el comando contiene una sala válida y lanza el goal
+
+         Args:
+            nombre_sala (string): ssala pasada.
+        """
+
         salas = {
             "entrada": (0.0, 15.0, 0.0),
             "recepciòn": (0.0, 2.0, 0.0),
@@ -146,6 +172,12 @@ class VoiceCmd(Node):
 
 
     def goal_response_callback(self, future):
+        """
+            Callback que maneja la respuesta del servidor de navegación tras enviar una meta.
+
+            Args:
+                future: Objeto Future que contiene la respuesta del servidor de navegación.
+        """
         goal_handle = future.result()
 
         if not goal_handle.accepted:
@@ -158,6 +190,12 @@ class VoiceCmd(Node):
 
 
     def get_result_callback(self, future):
+        """
+            Callback que maneja el resultado final del intento de navegación.
+
+            Args:
+                future: Objeto Future que contiene el resultado del goal.
+        """
         result = future.result().result
         status = future.result().status
 
@@ -170,15 +208,19 @@ class VoiceCmd(Node):
         else:
             self.get_logger().info(f"ℹ️ Resultado con estado: {status}")
 
-
-    
     #=====================================================================
 
-    # Funciones de movimiento odoom (esto es solo para probar)
+    # Funciones para enviar a salas
 
     #======================================================================
 
 
+    
+    #=====================================================================
+
+    # Funciones de movimiento odom (esto es solo para probar)
+
+    #======================================================================
 
     def procesar_comando_BM(self, comando):
         """Ejecuta acciones basadas en comandos de voz"""

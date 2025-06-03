@@ -5,6 +5,8 @@ Robot de  patrullaje hospitalario, pensado para apoyar en la logística (transpo
 ## Dependencias
 
 ```
+#servidor 
+pip install flask
 
 # Reconocimiento de caras
 pip3 install face_recognition
@@ -19,11 +21,23 @@ pip3 install opencv-python
 pip install label-studio
 label-studio start#ejecutar label studio
 
+
 #Pytorch
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 #Para yolo
 pip install ultralytics
+
+# Reconocimiento de voz
+pip install SpeechRecognition
+
+# Mic
+pip install pyaudio
+
+#Si no va ese intentar con este
+sudo apt install python3-pyaudio
+
+
 
 ```
 
