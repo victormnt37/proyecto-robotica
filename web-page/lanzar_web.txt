@@ -1,6 +1,5 @@
 #terminal 1: gazebo
 cd ~/proyecto-robotica/
-export TURTLEBOT3_MODEL=burger_pi
 source install/setup.bash
 ros2 launch kyron_mundo turtlebot3_hospital.launch.py
 
