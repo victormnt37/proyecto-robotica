@@ -11,6 +11,25 @@ document.addEventListener('DOMContentLoaded', event => {
     document.getElementById("btn_right").addEventListener("click", derecha)
     document.getElementById("btn_left").addEventListener("click", izquierda)
 
+
+
+    //Movimiento por teclas
+    document.addEventListener('keydown', function(event) {
+        if (event.code === 'KeyD') {
+            derecha(); 
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.code === 'KeyA') {
+            izquierda(); // Llama a tu función
+        }
+    });
+
+
+
+
+
     // boton patrullar
     document.getElementById("btn_waypoints").addEventListener("click", () => {
         console.log('Comienza la patrulla');
