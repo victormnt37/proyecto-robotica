@@ -13,6 +13,40 @@ def get_db_connection():
     conn = sqlite3.connect('hospitalBDD.db')  # Asegúrate que el nombre es correcto
     conn.row_factory = sqlite3.Row
     return conn
+#
+#
+#
+@app.route('/api/rol_por_nombre', methods=['GET'])
+def obtener_rol_por_nombre():
+    nombre = request.args.get('nombre')
+
+    if not nombre:
+        return jsonify({"error": "El nombre es requerido"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Buscar en Paciente
+    cursor.execute("SELECT * FROM Paciente WHERE nombre = ?", (nombre,))
+    if cursor.fetchone():
+        conn.close()
+        return jsonify({"rol": "paciente"})
+
+    # Buscar en Medico
+    cursor.execute("SELECT * FROM Medico WHERE nombre = ?", (nombre,))
+    if cursor.fetchone():
+        conn.close()
+        return jsonify({"rol": "medico"})
+
+    # Buscar en Administrador
+    cursor.execute("SELECT * FROM Administrador WHERE nombre = ?", (nombre,))
+    if cursor.fetchone():
+        conn.close()
+        return jsonify({"rol": "admin"})
+
+    conn.close()
+    return jsonify({"error": "Nombre no encontrado en ninguna tabla"}), 404
+
 
 # ------------------------
 # LOGIN API

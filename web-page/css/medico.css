@@ -3,6 +3,14 @@
     padding: 2rem 0;
 }
 
+.main-content h1 {
+    margin: auto;
+    width: 15%;
+    margin-bottom: 1rem;
+    padding: auto;
+    color: var(--primary-green);
+}
+
 .search-container {
     max-width: 800px;
     margin: 0 auto 2rem;

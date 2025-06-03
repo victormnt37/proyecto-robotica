@@ -2,8 +2,6 @@
 
 # Arbrir navegador: http://localhost:8000/web-page/
 
-# export TURTLEBOT3_MODEL=burger_pi
-
 # Terminal 1 - Navegación
 gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
@@ -22,37 +20,43 @@ ros2 service call /map_server/load_map nav2_msgs/srv/LoadMap '{map_url: $HOME/pr
 ros2 run kyron_nav kyron_initial_pose_pub
 exec bash"
 
-
-# Terminal 3 - rosbridge websocket
+# Terminal 3 - kyron vision
 gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 source install/setup.bash
 ros2 launch kyron_vision kyron_vision.launch.py
 exec bash"
 
-# Terminal 3 - rosbridge websocket
+# Terminal 4 - rosbridge websocket
 gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 source install/setup.bash
 ros2 launch rosbridge_server rosbridge_websocket_launch.xml
 exec bash"
 
-# Terminal 4 - web_video_server
+# Terminal 5 - web_video_server
 gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 source install/setup.bash
 ros2 run web_video_server web_video_server
 exec bash"
 
-# Terminal 5 - Servidor web
+# Terminal 6 - Servidor web
 gnome-terminal -- bash -c "
 cd ~/proyecto-robotica/
 python3 -m http.server 8000
 exec bash"
 
-# Terminal 6 - Servidor websocket
+# Terminal 7 - Servidor websocket (lanzamiento de comandos desde web)
 gnome-terminal -- bash -c "
 source install/setup.bash
 cd ~/proyecto-robotica/web-page/server
 python3 websocket_server.py
+exec bash"
+
+# Terminal 8 - backend
+gnome-terminal -- bash -c "
+source install/setup.bash
+cd ~/proyecto-robotica/web-page/
+python3 app.py
 exec bash"

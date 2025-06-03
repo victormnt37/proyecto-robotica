@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de citas - Kyron</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/citas.css"> 
+    <link rel="stylesheet" href="../css/medico.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="../js/citas.js" defer></script>
+</head>
+<body>
+
+    <!-- Header No Autenticado -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="/" class="logo">
+                <img src="../assets/logo.png" alt="Kyron Robotics" class="logo-img">
+                <span class="logo-text">Kyron</span>
+            </a>
+            <nav class="auth-buttons">
+                <button class="btn-header" onclick="window.location.href='login.html'">Iniciar Sesión</button>
+            </nav>
+        </div>
+    </header>
+
+    <a href="../index.html" class="back-arrow" title="Volver">
+        <span class="material-icons">arrow_back</span>
+    </a>
+
+    <main class="container main-content">
+        <h1>Consulta tu cita</h1>
+        <div class="search-container">
+            <input id="id_paciente" type="text" class="search-input" placeholder="Introduzca su DNI/SIP">
+        </div>
+
+        <table id="citas-table" class="patients-table">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Sala</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <!-- Conversaciones se insertan aquí -->
+        </table>
+    </main>
+
+    <!-- Modal para mostrar la conversación -->
+    <div id="conversacion-modal" class="modal-overlay hidden">
+        <div class="conversacion-popup card">
+            <div class="modal-header">
+                <h3>Conversación con <span id="patient-name">Paciente</span></h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="conversacion-content">
+                <!-- Mensajes se insertan aquí -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <p class="copyright">&copy; 2025 Kyron Registration - Sistema de Gestión Hospitalaria</p>
+            <div class="footer-info">
+                <span>Contacto: <a href="#" class="__cf_email__">contacto@kyron.com</a></span>
+                <nav class="social-links">
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">Twitter</a>
+                </nav>
+            </div>
+        </div>
+    </footer>
+
+    <div id="popup" class="popup-overlay hidden">
+        <div class="popup-content">
+          <span class="close-btn" id="cerrar-popup">&times;</span>
+          <h2>Información de la cita</h2>
+          <p><strong>Fecha:</strong> <span id="popup-fecha"></span></p>
+          <p><strong>Hora:</strong> <span id="popup-hora"></span></p>
+          <p><strong>Paciente:</strong> <span id="popup-paciente"></span></p>
+          <p><strong>Doctor:</strong> <span id="popup-doctor"></span></p>
+          <p><strong>Motivo:</strong> <span id="popup-motivo"></span></p>
+          <p><strong>Sala:</strong> <span id="popup-sala"></span></p>
+          <br>
+          <h3>¿Quieres que te guíe a la sala?</h3>
+          <div>
+            <button class="btn-confirmar" id="dirigir-a-sala">Sí</button>
+            <button class="btn-cancelar" id="cancelar-popup">No</button>
+          </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+</body>
+</html>

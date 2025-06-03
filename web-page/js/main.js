@@ -10,6 +10,26 @@ document.addEventListener('DOMContentLoaded', event => {
     document.getElementById("btn_stop").addEventListener("click", stop)
     document.getElementById("btn_right").addEventListener("click", derecha)
     document.getElementById("btn_left").addEventListener("click", izquierda)
+    
+
+
+
+    //Movimiento por teclas
+    document.addEventListener('keydown', function(event) {
+        if (event.code === 'KeyD') {
+            derecha(); 
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.code === 'KeyA') {
+            izquierda(); // Llama a tu función
+        }
+    });
+
+
+
+
 
     // boton patrullar
     document.getElementById("btn_waypoints").addEventListener("click", () => {
@@ -47,7 +67,7 @@ document.addEventListener('DOMContentLoaded', event => {
     data = {
         // ros connection
         ros: null,
-        rosbridge_address: 'ws://127.0.0.1:9090/', // CAMBIAR ESTA IP PARA EL ROBOT REAL (R11:192.168.0.136)
+        rosbridge_address: 'ws://127.0.0.1:9090/', // CAMBIAR ESTA IP PARA EL ROBOT REAL (R11:192.168.0.134)
         connected: false,
         // service information 
         service_busy: false, 
@@ -99,28 +119,66 @@ document.addEventListener('DOMContentLoaded', event => {
         const conteoPersonasTopic = new ROSLIB.Topic({
             ros: data.ros,
             name: '/vision/id_cuerpo',
-            messageType: 'kyron_interface/msg/ConteoPersonas'
+            messageType: 'kyron_interface/msg/ConteoPersonas2'
         });
 
         conteoPersonasTopic.subscribe((message) => {
             // Actualizar el DOM con los datos del mensaje
             document.getElementById("num-pacientes").textContent = message.pacientes;
-            document.getElementById("num-doctores").textContent = message.doctores;
-            document.getElementById("num-cirujanos").textContent = message.cirujanos;
-            document.getElementById("num-internados").textContent = message.internados;
-            document.getElementById("num-enfermeros").textContent = message.enfermeros;
+            document.getElementById("num-personal").textContent = message.personal;
+        })
+
+        const riesgo = new ROSLIB.Topic({
+            ros: data.ros,
+            name: '/vision/id_risk',
+            messageType: 'kyron_interface/msg/RiskDT'
         });
 
-          // Suscripción a id_cara
-          const id_caras_topic = new ROSLIB.Topic({
+        riesgo.subscribe((message) => {
+            const indicador = document.getElementById("bool-violencia");
+
+            if (message.violencia_detectada) {
+              indicador.className = "violencia";
+              indicador.textContent = "Violencia detectada";
+            } else {
+              indicador.className = "sin-violencia";
+              indicador.textContent = "No hay violencia";
+            }
+        })
+
+        // Suscripción a id_cara
+        const id_caras_topic = new ROSLIB.Topic({
             ros: data.ros,
             name: '/vision/id_cara',
             messageType: 'kyron_interface/msg/PersonaIdentificada'
         });
+        
 
-        id_caras_topic.subscribe((message) => {
-            // Actualizar el DOM con los datos del mensaje
+        id_caras_topic.subscribe((message) => { 
+            // Mostrar el nombre recibido
             document.getElementById("persona-identificada").textContent = message.nombre_persona;
+            
+            //Pau detecion rol por nombre
+            // Hacer la solicitud al backend para obtener el rol
+            fetch(`http://localhost:5000/api/rol_por_nombre?nombre=${encodeURIComponent(message.nombre_persona)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("No se pudo obtener el rol");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.rol) {
+                        document.getElementById("rol-persona").textContent = data.rol;
+                    } else if (data.error) {
+                        document.getElementById("rol-persona").textContent = "No encontrado";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al obtener el rol:", error);
+                    document.getElementById("rol-persona").textContent = "Error";
+                });
+                //Fin Pau detecion rol por nombre
         });
 
         updateCameraFeed()
@@ -136,7 +194,7 @@ document.addEventListener('DOMContentLoaded', event => {
             messageType: 'geometry_msgs/msg/Twist'
         })
         let message = new ROSLIB.Message({
-            linear: {x: 0.1, y: 0, z: 0, },
+            linear: {x: 0.2, y: 0, z: 0, },
             angular: {x: 0, y: 0, z: 0, },
         })
         topic.publish(message)
@@ -157,10 +215,10 @@ document.addEventListener('DOMContentLoaded', event => {
 
     function disconnect(){
         stop()
-      data.ros.close()
-      data.connected = false
-    console.log('Clic en botón de desconexión')
-}
+        data.ros.close()
+        data.connected = false
+        console.log('Clic en botón de desconexión')
+    }
     function derecha() {
         let topic = new ROSLIB.Topic({
             ros: data.ros,
@@ -168,8 +226,8 @@ document.addEventListener('DOMContentLoaded', event => {
             messageType: 'geometry_msgs/msg/Twist'
         })
         let message = new ROSLIB.Message({
-            linear: {x: 0.1, y: 0, z: 0, },
-            angular: {x: 0, y: 0, z: -0.2, },
+            linear: {x: 0, y: 0, z: 0, },
+            angular: {x: 0, y: 0, z: -0.5, },
         })
         topic.publish(message)
     }
@@ -181,8 +239,8 @@ document.addEventListener('DOMContentLoaded', event => {
             messageType: 'geometry_msgs/msg/Twist'
         })
         let message = new ROSLIB.Message({
-            linear: {x: 0.1, y: 0, z: 0, },
-            angular: {x: 0, y: 0, z: 0.2, },
+            linear: {x: 0, y: 0, z: 0, },
+            angular: {x: 0, y: 0, z: 0.5, },
         })
         topic.publish(message)
     }
