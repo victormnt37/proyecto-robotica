@@ -17,6 +17,8 @@
   <exec_depend>async_web_server_cpp</exec_depend>
   <exec_depend>web_video_server</exec_depend>
   <exec_depend>kyron_vision</exec_depend>
+  <exec_depend>kyron_ia</exec_depend>
+
 
 
 
