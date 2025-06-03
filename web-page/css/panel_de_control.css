@@ -211,6 +211,27 @@
     border-radius: 3px;
 }
 
+/* Estilo cuando NO hay violencia */
+.sin-violencia {
+    background-color: #4caf50; /* verde */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+}
+  
+  /* Estilo cuando SÍ hay violencia */
+.violencia {
+    background-color: #f44336; /* rojo */
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+}
+  
+
 /* Animaciones */
 @keyframes pulse {
     0% { opacity: 0.8; }

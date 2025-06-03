@@ -126,10 +126,28 @@ document.addEventListener('DOMContentLoaded', event => {
             // Actualizar el DOM con los datos del mensaje
             document.getElementById("num-pacientes").textContent = message.pacientes;
             document.getElementById("num-personal").textContent = message.personal;
+        })
+
+        const riesgo = new ROSLIB.Topic({
+            ros: data.ros,
+            name: '/vision/id_risk',
+            messageType: 'kyron_interface/msg/RiskDT'
         });
 
-          // Suscripción a id_cara
-          const id_caras_topic = new ROSLIB.Topic({
+        riesgo.subscribe((message) => {
+            const indicador = document.getElementById("bool-violencia");
+
+            if (message.violencia_detectada) {
+              indicador.className = "violencia";
+              indicador.textContent = "Violencia detectada";
+            } else {
+              indicador.className = "sin-violencia";
+              indicador.textContent = "No hay violencia";
+            }
+        })
+
+        // Suscripción a id_cara
+        const id_caras_topic = new ROSLIB.Topic({
             ros: data.ros,
             name: '/vision/id_cara',
             messageType: 'kyron_interface/msg/PersonaIdentificada'
