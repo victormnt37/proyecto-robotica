@@ -136,10 +136,33 @@ document.addEventListener('DOMContentLoaded', event => {
             name: '/vision/id_cara',
             messageType: 'kyron_interface/msg/PersonaIdentificada'
         });
+        
 
-        id_caras_topic.subscribe((message) => {
-            // Actualizar el DOM con los datos del mensaje
+        id_caras_topic.subscribe((message) => { 
+            // Mostrar el nombre recibido
             document.getElementById("persona-identificada").textContent = message.nombre_persona;
+            
+            //Pau detecion rol por nombre
+            // Hacer la solicitud al backend para obtener el rol
+            fetch(`http://localhost:5000/api/rol_por_nombre?nombre=${encodeURIComponent(message.nombre_persona)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("No se pudo obtener el rol");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.rol) {
+                        document.getElementById("rol-persona").textContent = data.rol;
+                    } else if (data.error) {
+                        document.getElementById("rol-persona").textContent = "No encontrado";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al obtener el rol:", error);
+                    document.getElementById("rol-persona").textContent = "Error";
+                });
+                //Fin Pau detecion rol por nombre
         });
 
         updateCameraFeed()
